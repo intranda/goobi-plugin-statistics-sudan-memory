@@ -1,0 +1,243 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:x="http://myfaces.apache.org/tomahawk"
+    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <composite:interface>
+    </composite:interface>
+
+    <composite:implementation>
+
+
+
+        <h:form
+            id="statisticplugin"
+            styleClass="form-vertical form-bordered">
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="box box-color lightgrey box-bordered">
+                        <div class="box-title">
+                            <h3>
+                                <i class="glyphicon-compass box-icon-fix"></i>
+                                <h:outputText value="#{msgs.auswahl2}" />
+                            </h3>
+                        </div>
+                        <div class="box-content nopadding">
+                            <div class="row">
+                                <!-- ###################### input form ###################### -->
+
+
+                                <div class="col-sm-4">
+                                    <div class="form-group" style="border:none">
+                                        <h:outputLabel
+                                            for="cal01"
+                                            styleClass="control-label"
+                                            value="#{msgs.zeitraum} #{msgs.from}" />
+                                        <div style="display: block">
+                                            <h:inputText
+                                                id="cal01"
+                                                value="#{StatisticalQuestionBean.currentPlugin.startDateText}"
+                                                validatorMessage="#{msgs.statistics_wrong_date_format}">
+                                                <f:validateRegex pattern="^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})?$"></f:validateRegex>
+                                                <f:passThroughAttribute
+                                                    name="placeholder"
+                                                    value="YYYY-MM-DD" />
+                                            </h:inputText>
+                                            <h:message
+                                                for="cal01"
+                                                showDetail="true"
+                                                styleClass="help-inline font-danger" />
+                 </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4">
+
+                                    <div class="form-group" style="border:none">
+                                        <h:outputLabel
+                                            for="cal02"
+                                            styleClass="control-label"
+                                            value="#{msgs.zeitraum} #{msgs.to}" />
+                                        <div style="display: block">
+                                            <h:inputText
+                                                id="cal02"
+                                                value="#{StatisticalQuestionBean.currentPlugin.endDateText}"
+                                                validatorMessage="#{msgs.statistics_wrong_date_format}">
+                                                <f:validateRegex pattern="^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})?$"></f:validateRegex>
+
+                                                <f:passThroughAttribute
+                                                    name="placeholder"
+                                                    value="YYYY-MM-DD" />
+                                            </h:inputText>
+                                            <h:message
+                                                for="cal02"
+                                                showDetail="true"
+                                                styleClass="help-inline font-danger" />
+                                        </div>
+                                    </div>
+                                </div>
+                                 <div class="col-sm-4">
+                                    <div class="form-group" style="border:none">
+                                        <h:outputLabel
+                                            for="field03"
+                                            styleClass="control-label"
+                                            value="#{msgs.einheit}" />
+                                        <h:selectOneMenu
+                                            id="field03"
+                                            value="#{StatisticalQuestionBean.currentPlugin.timeRange}"
+                                            styleClass="form-control">
+                                            <f:selectItem
+                                                itemValue="'%Y-%m-%d'"
+                                                itemLabel="#{msgs.days}" />
+                                            <f:selectItem
+                                                itemValue="'%Y-%m'"
+                                                itemLabel="#{msgs.months}" />
+                                            <f:selectItem
+                                                itemValue="concat(YEAR(BearbeitungsEnde),'/',QUARTER(BearbeitungsEnde))"
+                                                itemLabel="#{msgs.quarters}" />
+                                            <f:selectItem
+                                                itemValue="'%Y'"
+                                                itemLabel="#{msgs.years}" />
+
+                                        </h:selectOneMenu>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Generate the statistics or cancel again -->
+                            <div class="form-actions" style="border-top: 1px solid #ddd;">
+                                <h:commandButton
+                                    styleClass="btn btn-primary submitOnEnter pull-right font-size-s margin-bottom-most"
+                                    id="myStatisticButton"
+                                    type="submit"
+                                    title="#{msgs.calculateStatistics}"
+                                    action="#{StatisticalQuestionBean.calculate}"
+                                    value="#{msgs.calculateStatistics}">
+                                </h:commandButton>
+
+                                <h:commandButton
+                                    styleClass="btn margin-sides-10 font-size-s pull-right"
+                                    id="cancel"
+                                    title="#{msgs.calculateStatistics}"
+                                    action="#{StatisticalQuestionBean.currentPlugin.resetStatistics}"
+                                    value="#{msgs.abbrechen}">
+
+                                </h:commandButton>
+                            </div>
+                            <!-- ###################### // input form ###################### -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h:panelGroup rendered="#{StatisticalQuestionBean.currentPlugin.resultList != null}">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="box box-color lightgrey box-bordered">
+                            <div class="box-title">
+                                <h3>
+                                    <i class="fa fa-pie-chart"></i>
+                                    <h:outputText value="#{msgs.ergebnisse}" />
+                                </h3>
+                            </div>
+                            <div class="box-content nopadding">
+
+
+                                <!-- ###################### result table ###################### -->
+
+                                <div class="dataTables_wrapper">
+                                    <div class="dataTables_length">
+                                        <h:outputText value="#{msgs.treffer}: #{StatisticalQuestionBean.currentPlugin.resultList.size()}" />
+                                    </div>
+
+
+
+                                    <x:dataTable
+                                        id="results"
+                                        styleClass="table table-hover table-nomargin dataTable table-bordered responsive"
+                                        var="item"
+                                        value="#{StatisticalQuestionBean.currentPlugin.resultList}">
+                                        <!-- 
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.rawValue}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item}" />
+                                        </h:column>
+                                         -->
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_stanford_number_images}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_stanford_number_images}" />
+                                        </h:column>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_stanford_number_steps}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_stanford_number_steps}" />
+                                        </h:column>
+
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_stanford_step}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_stanford_step}" />
+                                        </h:column>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_stanford_step_username}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_stanford_step_username}" />
+                                        </h:column>
+
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_stanford_step_average_duration}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_stanford_step_average_duration}" />
+                                        </h:column>
+
+                                    </x:dataTable>
+
+                                </div>
+
+                                <!-- ###################### // result table ###################### -->
+
+                            </div>
+                            <div class="form-actions">
+                                <h:commandButton
+                                    styleClass="btn btn-primary  pull-right font-size-s margin-bottom-most"
+                                    id="excelDownload"
+                                    type="submit"
+                                    title="#{msgs.download_excel}"
+                                    action="#{StatisticalQuestionBean.currentPlugin.generateExcelDownload}"
+                                    value="#{msgs.download_excel}">
+                                </h:commandButton>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </h:panelGroup>
+
+            <style>
+.box.box-bordered .table.table-bordered {
+    border-right: 1px solid #ddd;
+}
+</style>
+        </h:form>
+
+    </composite:implementation>
+
+</ui:composition>
+
+
