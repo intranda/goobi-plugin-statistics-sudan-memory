@@ -1,22 +1,87 @@
 package de.intranda.goobi.plugins.statistics;
 
-import org.apache.commons.lang.StringUtils;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.goobi.production.enums.PluginType;
+import org.goobi.production.plugin.interfaces.IStatisticPlugin;
+
+import de.sub.goobi.helper.FacesContextHelper;
+import de.sub.goobi.helper.Helper;
 import de.sub.goobi.persistence.managers.ControllingManager;
+import de.sub.goobi.persistence.managers.ProjectManager;
+import de.sub.goobi.persistence.managers.StepManager;
+import de.sub.goobi.persistence.managers.UsergroupManager;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.extern.log4j.Log4j2;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
+@Log4j2
 @Data
 @PluginImplementation
-@EqualsAndHashCode(callSuper = false)
-public class ActivityByUserPlugin extends AbstractSudanStatistics {
+public class ActivityByUserPlugin implements IStatisticPlugin {
 
     private String title = "plugin_statistics_sudan_activity_by_user";
+
+    private PluginType type = PluginType.Statistics;
+
+    private int projectId;
+    private String filter;
+
+    private Date startDate;
+    private Date endDate;
+
+    private String startDateText;
+    private String endDateText;
+
+    private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+    private List<Map<String, String>> resultListExcel;
+    private List<Map<String, String>> resultList;
+
+    private List<String> projectNames;
+    private String project;
+
+    private List<String> stepNames;
+    private String step;
+
+    private List<String> usergroupNames;
+    private String usergroup;
+
+    private String timeRange = "%Y-%m";
+    private List<String> headerOrder = new ArrayList<>();
 
     @Override
     public String getGui() {
         return "/uii/plugin_statistics_sudan_activity_by_user.xhtml";
+    }
+
+    public ActivityByUserPlugin() {
+        headerOrder.add("plugin_statistics_sudan_title");
+        headerOrder.add("plugin_statistics_sudan_titleCount");
+        headerOrder.add("plugin_statistics_sudan_titlearabic");
+        headerOrder.add("plugin_statistics_sudan_titlearabicCount");
+        headerOrder.add("plugin_statistics_sudan_description");
+        headerOrder.add("plugin_statistics_sudan_descriptionCount");
+        headerOrder.add("plugin_statistics_sudan_descriptionarabic");
+        headerOrder.add("plugin_statistics_sudan_descriptionarabicCount");
+        headerOrder.add("plugin_statistics_sudan_workflowTitle");
+        headerOrder.add("plugin_statistics_sudan_processTitle");
+        headerOrder.add("plugin_statistics_sudan_userName");
     }
 
     @Override
@@ -24,63 +89,336 @@ public class ActivityByUserPlugin extends AbstractSudanStatistics {
         calculateData();
     }
 
+    /*
+
+    SELECT
+    m1.processid,
+    m1.value AS plugin_statistics_sudan_title,
+    WORDCOUNT(m1.value) AS plugin_statistics_sudan_titleCount,
+    m2.value AS plugin_statistics_sudan_titlearabic,
+    WORDCOUNT(m2.value) AS plugin_statistics_sudan_titlearabicCount,
+    m3.value AS plugin_statistics_sudan_description,
+    WORDCOUNT(m3.value) AS plugin_statistics_sudan_descriptionCount,
+    m4.value AS plugin_statistics_sudan_descriptionarabic,
+    WORDCOUNT(m4.value) AS plugin_statistics_sudan_descriptionarabicCount,
+    s.Titel AS plugin_statistics_sudan_workflowTitle,
+    p.Titel AS plugin_statistics_sudan_processTitle,
+    CONCAT(u.Nachname, ', ', u.Vorname) AS plugin_statistics_sudan_userName
+    FROM
+    metadata m1
+        JOIN
+    metadata m2 ON m1.processid = m2.processid
+        JOIN
+    metadata m3 ON m1.processid = m3.processid
+        JOIN
+    metadata m4 ON m1.processid = m4.processid
+        JOIN
+    schritte s ON m1.processid = s.ProzesseID
+        LEFT JOIN
+    prozesse p ON s.ProzesseID = p.ProzesseID
+        LEFT JOIN
+    benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID
+    WHERE
+    m1.name = 'TitleDocMain'
+        AND m2.name = 'TitleDocMainArabic'
+        AND m3.name = 'ContentDescription'
+        AND m4.name = 'ContentDescriptionArabic'
+        AND s.typMetadaten = TRUE
+        AND s.titel like '%ranslat%'
+        AND s.Bearbeitungsstatus = 3
+        AND s.BearbeitungsEnde BETWEEN '2019-01-01' AND '2020-12-31';
+
+
+    SELECT
+    DATE_FORMAT(s.BearbeitungsEnde, '%Y-%m') AS plugin_statistics_sudan_timeRange,
+    WORDCOUNT(GROUP_CONCAT(m1.value SEPARATOR ' ')) AS plugin_statistics_sudan_titleCount,
+    WORDCOUNT(GROUP_CONCAT(m2.value SEPARATOR ' ')) AS plugin_statistics_sudan_titlearabicCount,
+    WORDCOUNT(GROUP_CONCAT(m3.value SEPARATOR ' ')) AS plugin_statistics_sudan_descriptionCount,
+    WORDCOUNT(GROUP_CONCAT(m4.value SEPARATOR ' ')) AS plugin_statistics_sudan_descriptionarabicCount,
+    COUNT(s.Titel) AS plugin_statistics_sudan_workflowTitleCount,
+    CONCAT(u.Nachname, ', ', u.Vorname) AS plugin_statistics_sudan_userName
+    FROM
+    metadata m1
+        JOIN
+    metadata m2 ON m1.processid = m2.processid
+        JOIN
+    metadata m3 ON m1.processid = m3.processid
+        JOIN
+    metadata m4 ON m1.processid = m4.processid
+        JOIN
+    schritte s ON m1.processid = s.ProzesseID
+        LEFT JOIN
+    benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID
+    WHERE
+    m1.name = 'TitleDocMain'
+        AND m2.name = 'TitleDocMainArabic'
+        AND m3.name = 'ContentDescription'
+        AND m4.name = 'ContentDescriptionArabic'
+        AND s.typMetadaten = TRUE
+        AND s.Bearbeitungsstatus = 3
+        AND s.titel like '%ranslat%'
+        AND s.BearbeitungsEnde BETWEEN '2019-01-01' AND '2020-12-31'
+    GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName;
+
+
+    drop function wordcount;
+    DELIMITER $$
+    CREATE FUNCTION wordcount(str TEXT CHARSET utf8mb4)
+            RETURNS INT
+            DETERMINISTIC
+            SQL SECURITY INVOKER
+            NO SQL
+       BEGIN
+         DECLARE wordCnt, idx, maxIdx INT DEFAULT 0;
+         DECLARE currChar, prevChar BOOL DEFAULT 0;
+         SET maxIdx=char_length(str);
+         WHILE idx < maxIdx DO
+             SET currChar=SUBSTRING(str, idx, 1) RLIKE '[[:alnum:]]';
+             IF NOT prevChar AND currChar THEN
+                 SET wordCnt=wordCnt+1;
+             END IF;
+             SET prevChar=currChar;
+             SET idx=idx+1;
+         END WHILE;
+         RETURN wordCnt;
+       END
+     $$
+     DELIMITER ;
+
+     */
+
     /**
      * calculate data from database
      */
-    @Override
-    protected void calculateData() {
 
-        StringBuilder sb = new StringBuilder();
+    private void calculateData() {
+        StringBuilder overview = new StringBuilder();
 
-        // #6. How much activity has been logged for each step, and by what users and groups? What is the average activity time for each step?
-        // #Select the average time a task was processed, listed per task type per user, can be limited to a time range
+        overview.append("SELECT ");
+        overview.append("DATE_FORMAT(s.BearbeitungsEnde, ");
+        overview.append(timeRange);
+        overview.append(") AS plugin_statistics_sudan_timeRange, ");
+        overview.append("WORDCOUNT(GROUP_CONCAT(m1.value SEPARATOR ' ')) AS plugin_statistics_sudan_titleCount, ");
+        overview.append("WORDCOUNT(GROUP_CONCAT(m2.value SEPARATOR ' ')) AS plugin_statistics_sudan_titlearabicCount, ");
+        overview.append("WORDCOUNT(GROUP_CONCAT(m3.value SEPARATOR ' ')) AS plugin_statistics_sudan_descriptionCount, ");
+        overview.append("WORDCOUNT(GROUP_CONCAT(m4.value SEPARATOR ' ')) AS plugin_statistics_sudan_descriptionarabicCount, ");
+        overview.append("COUNT(s.Titel) AS plugin_statistics_sudan_workflowTitleCount, ");
+        overview.append("CONCAT(u.Nachname, ', ', u.Vorname) AS plugin_statistics_sudan_userName ");
+        overview.append("FROM ");
+        overview.append("metadata m1 ");
+        overview.append("    JOIN ");
+        overview.append(" metadata m2 ON m1.processid = m2.processid ");
+        overview.append("    JOIN ");
+        overview.append("metadata m3 ON m1.processid = m3.processid ");
+        overview.append("    JOIN ");
+        overview.append("metadata m4 ON m1.processid = m4.processid ");
+        overview.append("    JOIN ");
+        overview.append("schritte s ON m1.processid = s.ProzesseID ");
+        overview.append("    LEFT JOIN ");
+        overview.append("benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
+        overview.append("WHERE ");
+        overview.append("m1.name = 'TitleDocMain' ");
+        overview.append("    AND m2.name = 'TitleDocMainArabic' ");
+        overview.append("    AND m3.name = 'ContentDescription' ");
+        overview.append("    AND m4.name = 'ContentDescriptionArabic' ");
+        overview.append("    AND s.typMetadaten = TRUE ");
+        overview.append("    AND s.Bearbeitungsstatus = 3 ");
+        overview.append("    AND s.titel like '%ranslat%' ");
 
-        sb.append("select ");
-        sb.append("sum(p.sortHelperImages) as plugin_statistics_stanford_number_images, ");
-        sb.append("count(s.SchritteID) as plugin_statistics_stanford_number_steps, ");
-        sb.append("s.titel as plugin_statistics_stanford_step, ");
-        sb.append("concat(u.Nachname, ', ', u.Vorname) as plugin_statistics_stanford_step_username, ");
-        sb.append("avg(TIMEDIFF(s.BearbeitungsEnde, s.BearbeitungsBeginn)) as plugin_statistics_stanford_step_average_duration ");
-        sb.append("from schritte s ");
-        sb.append("left join prozesse p on s.ProzesseID = p.ProzesseID ");
-        sb.append("left join benutzer u on s.BearbeitungsBenutzerID = u.BenutzerID ");
-        sb.append("where s.BearbeitungsStatus = 3 ");
-        sb.append("and s.typAutomatisch = false ");
-
-        //        sb.append("and s1.BearbeitungsEnde between '2018-01-01' and '2018-12-31'; ");
         if (StringUtils.isNotBlank(startDateText) && StringUtils.isNotBlank(endDateText)) {
-            sb.append("and s.BearbeitungsEnde between '");
-            sb.append(startDateText);
-            sb.append("' and '");
-            sb.append(endDateText);
-            sb.append("' ");
+            overview.append("AND s.BearbeitungsEnde BETWEEN '");
+            overview.append(startDateText);
+            overview.append("' and '");
+            overview.append(endDateText);
+            overview.append("' ");
         } else if (StringUtils.isNotBlank(startDateText)) {
-            sb.append("and s.BearbeitungsEnde >= '");
-            sb.append(startDateText);
-            sb.append("' ");
+            overview.append("AND s.BearbeitungsEnde >= '");
+            overview.append(startDateText);
+            overview.append("' ");
         } else if (StringUtils.isNotBlank(endDateText)) {
-            sb.append("and s.BearbeitungsEnde <= '");
-            sb.append(endDateText);
-            sb.append("' ");
+            overview.append("AND s.BearbeitungsEnde <= '");
+            overview.append(endDateText);
+            overview.append("' ");
         }
 
-        //# and projekte.Titel = "Piano Rolls" - to only query a single project
-        if (StringUtils.isNotBlank(project)) {
-            sb.append("and projekte.Titel = '");
-            sb.append(project);
-            sb.append("' ");
-        }
-        // constrain by Step
-        if (StringUtils.isNotBlank(step)) {
-            sb.append("AND s1.Titel = '");
-            sb.append(step);
-            sb.append("' ");
-        }
+        overview.append("GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName; ");
 
-        sb.append("group by s.titel, u.login");
-
-        resultList = ControllingManager.getResultsAsMaps(sb.toString());
+        resultList = ControllingManager.getResultsAsMaps(overview.toString());
 
     }
 
+    @Override
+    public boolean getPermissions() {
+        return true;
+    }
+
+    public void setStartDateText(String value) {
+        startDateText = value;
+    }
+
+    public void setEndDateText(String value) {
+        endDateText = value;
+    }
+
+    public String getStartDateAsString() {
+        if (startDate != null) {
+            return dateFormat.format(startDate);
+        }
+        return null;
+    }
+
+    public String getEndDateAsString() {
+        if (endDate != null) {
+            return dateFormat.format(endDate);
+        }
+        return null;
+    }
+
+    public List<String> getProjectNames() {
+        if (projectNames == null || projectNames.isEmpty()) {
+            projectNames = new ArrayList<>();
+            projectNames.add("");
+            projectNames.addAll(ProjectManager.getAllProjectTitles(false));
+        }
+
+        return projectNames;
+    }
+
+    public List<String> getStepNames() {
+        if (stepNames == null || stepNames.isEmpty()) {
+            stepNames = new ArrayList<>();
+            stepNames.add("");
+            stepNames.addAll(StepManager.getDistinctStepTitles());
+        }
+        return stepNames;
+    }
+
+    public List<String> getUsergroupNames() {
+        if (usergroupNames == null || usergroupNames.isEmpty()) {
+            usergroupNames = new ArrayList<>();
+            usergroupNames.add("");
+            usergroupNames.addAll(UsergroupManager.getAllUsergroupNames());
+        }
+        return usergroupNames;
+    }
+
+    public void resetStatistics() {
+        resultList = null;
+    }
+
+    public void generateExcelDownload() {
+
+        StringBuilder details = new StringBuilder();
+        details.append("SELECT ");
+        //        details.append("m1.processid, ");
+        details.append("m1.value AS plugin_statistics_sudan_title, ");
+        details.append("WORDCOUNT(m1.value) AS plugin_statistics_sudan_titleCount, ");
+        details.append("m2.value AS plugin_statistics_sudan_titlearabic, ");
+        details.append("WORDCOUNT(m2.value) AS plugin_statistics_sudan_titlearabicCount, ");
+        details.append("m3.value AS plugin_statistics_sudan_description, ");
+        details.append("WORDCOUNT(m3.value) AS plugin_statistics_sudan_descriptionCount, ");
+        details.append("m4.value AS plugin_statistics_sudan_descriptionarabic, ");
+        details.append("WORDCOUNT(m4.value) AS plugin_statistics_sudan_descriptionarabicCount, ");
+        details.append("s.Titel AS plugin_statistics_sudan_workflowTitle, ");
+        details.append("p.Titel AS plugin_statistics_sudan_processTitle, ");
+        details.append("CONCAT(u.Nachname, ', ', u.Vorname) AS plugin_statistics_sudan_userName ");
+        details.append("FROM ");
+        details.append("metadata m1 ");
+        details.append("    JOIN ");
+        details.append("metadata m2 ON m1.processid = m2.processid ");
+        details.append("    JOIN ");
+        details.append("metadata m3 ON m1.processid = m3.processid ");
+        details.append("    JOIN ");
+        details.append("metadata m4 ON m1.processid = m4.processid ");
+        details.append("    JOIN ");
+        details.append("schritte s ON m1.processid = s.ProzesseID ");
+        details.append("    LEFT JOIN ");
+        details.append("prozesse p ON s.ProzesseID = p.ProzesseID ");
+        details.append("    LEFT JOIN ");
+        details.append("benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
+        details.append("WHERE ");
+        details.append("m1.name = 'TitleDocMain' ");
+        details.append("    AND m2.name = 'TitleDocMainArabic' ");
+        details.append("    AND m3.name = 'ContentDescription' ");
+        details.append("   AND m4.name = 'ContentDescriptionArabic' ");
+        details.append("    AND s.typMetadaten = TRUE ");
+        details.append("    AND s.titel like '%ranslat%' ");
+        details.append("    AND s.Bearbeitungsstatus = 3 ");
+
+        if (StringUtils.isNotBlank(startDateText) && StringUtils.isNotBlank(endDateText)) {
+            details.append("AND s.BearbeitungsEnde BETWEEN '");
+            details.append(startDateText);
+            details.append("' and '");
+            details.append(endDateText);
+            details.append("' ");
+        } else if (StringUtils.isNotBlank(startDateText)) {
+            details.append("AND s.BearbeitungsEnde >= '");
+            details.append(startDateText);
+            details.append("' ");
+        } else if (StringUtils.isNotBlank(endDateText)) {
+            details.append("AND s.BearbeitungsEnde <= '");
+            details.append(endDateText);
+            details.append("' ");
+        }
+
+        details.append(" ORDER BY ");
+        details.append("DATE_FORMAT(s.BearbeitungsEnde, ");
+        details.append(timeRange);
+        details.append("), plugin_statistics_sudan_userName ");
+        resultListExcel = ControllingManager.getResultsAsMaps(details.toString());
+        if (resultListExcel.isEmpty()) {
+            Helper.setMeldung("No results to export.");
+            return;
+        }
+        Workbook wb = new XSSFWorkbook();
+
+        Sheet sheet = wb.createSheet("results");
+
+        // create header
+        Row headerRow = sheet.createRow(0);
+
+        int columnCounter = 0;
+        for (String headerName : headerOrder) {
+            headerRow.createCell(columnCounter).setCellValue(Helper.getTranslation(headerName));
+            columnCounter = columnCounter + 1;
+        }
+
+        int rowCounter = 1;
+        // add results
+        for (Map<String, String> result : resultListExcel) {
+            Row resultRow = sheet.createRow(rowCounter);
+            columnCounter = 0;
+            for (String headerName : headerOrder) {
+                resultRow.createCell(columnCounter).setCellValue(result.get(headerName));
+                columnCounter = columnCounter + 1;
+            }
+            rowCounter = rowCounter + 1;
+        }
+
+        // write result into output stream
+        FacesContext facesContext = FacesContextHelper.getCurrentFacesContext();
+
+        HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
+        OutputStream out;
+        try {
+            out = response.getOutputStream();
+            response.setContentType("application/vnd.ms-excel");
+            response.setHeader("Content-Disposition", "attachment;filename=\"report.xlsx\"");
+            wb.write(out);
+            out.flush();
+            facesContext.responseComplete();
+        } catch (IOException e) {
+            log.error(e);
+        }
+        try {
+            wb.close();
+        } catch (IOException e) {
+            log.error(e);
+        }
+    }
+
+    @Override
+    public String getData() {
+        return null;
+    }
 }
