@@ -15,377 +15,383 @@
 
     <composite:implementation>
 
+        <h:panelGroup rendered="#{!LoginForm.hasRole('view_translation_activity')}">
+            <h:outputText
+                styleClass="alert alert-danger alert-dismissable margin-bottom-10 margin-top-10"
+                value="#{msgs.plugin_administration_missingPermission} view_translation_activity"></h:outputText>
+        </h:panelGroup>
+
+        <ui:fragment rendered="#{LoginForm.hasRole('view_translation_activity')}">
+
+            <h:form
+                id="statisticplugin"
+                styleClass="form-vertical form-bordered">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="box box-color lightgrey box-bordered">
+                            <div class="box-title">
+                                <h3>
+                                    <i class="glyphicon-compass box-icon-fix"></i>
+                                    <h:outputText value="#{msgs.auswahl2}" />
+                                </h3>
+                            </div>
+                            <div class="box-content nopadding">
+                                <div class="row">
+                                    <!-- ###################### input form ###################### -->
 
 
-        <h:form
-            id="statisticplugin"
-            styleClass="form-vertical form-bordered">
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="box box-color lightgrey box-bordered">
-                        <div class="box-title">
-                            <h3>
-                                <i class="glyphicon-compass box-icon-fix"></i>
-                                <h:outputText value="#{msgs.auswahl2}" />
-                            </h3>
-                        </div>
-                        <div class="box-content nopadding">
-                            <div class="row">
-                                <!-- ###################### input form ###################### -->
-
-
-                                <div class="col-sm-4">
-                                    <div
-                                        class="form-group"
-                                        style="border: none">
-                                        <h:outputLabel
-                                            for="cal01"
-                                            styleClass="control-label"
-                                            value="#{msgs.zeitraum} #{msgs.from}" />
-                                        <div style="display: block">
-                                            <h:inputText
-                                                id="cal01"
-                                                value="#{StatisticalQuestionBean.currentPlugin.startDateText}"
-                                                validatorMessage="#{msgs.statistics_wrong_date_format}">
-                                                <f:validateRegex pattern="^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})?$"></f:validateRegex>
-                                                <f:passThroughAttribute
-                                                    name="placeholder"
-                                                    value="YYYY-MM-DD" />
-                                            </h:inputText>
-                                            <h:message
+                                    <div class="col-sm-4">
+                                        <div
+                                            class="form-group"
+                                            style="border: none">
+                                            <h:outputLabel
                                                 for="cal01"
-                                                showDetail="true"
-                                                styleClass="help-inline font-danger" />
+                                                styleClass="control-label"
+                                                value="#{msgs.zeitraum} #{msgs.from}" />
+                                            <div style="display: block">
+                                                <h:inputText
+                                                    id="cal01"
+                                                    value="#{StatisticalQuestionBean.currentPlugin.startDateText}"
+                                                    validatorMessage="#{msgs.statistics_wrong_date_format}">
+                                                    <f:validateRegex pattern="^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})?$"></f:validateRegex>
+                                                    <f:passThroughAttribute
+                                                        name="placeholder"
+                                                        value="YYYY-MM-DD" />
+                                                </h:inputText>
+                                                <h:message
+                                                    for="cal01"
+                                                    showDetail="true"
+                                                    styleClass="help-inline font-danger" />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="col-sm-4">
+                                    <div class="col-sm-4">
 
-                                    <div
-                                        class="form-group"
-                                        style="border: none">
-                                        <h:outputLabel
-                                            for="cal02"
-                                            styleClass="control-label"
-                                            value="#{msgs.zeitraum} #{msgs.to}" />
-                                        <div style="display: block">
-                                            <h:inputText
-                                                id="cal02"
-                                                value="#{StatisticalQuestionBean.currentPlugin.endDateText}"
-                                                validatorMessage="#{msgs.statistics_wrong_date_format}">
-                                                <f:validateRegex pattern="^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})?$"></f:validateRegex>
-
-                                                <f:passThroughAttribute
-                                                    name="placeholder"
-                                                    value="YYYY-MM-DD" />
-                                            </h:inputText>
-                                            <h:message
+                                        <div
+                                            class="form-group"
+                                            style="border: none">
+                                            <h:outputLabel
                                                 for="cal02"
-                                                showDetail="true"
-                                                styleClass="help-inline font-danger" />
+                                                styleClass="control-label"
+                                                value="#{msgs.zeitraum} #{msgs.to}" />
+                                            <div style="display: block">
+                                                <h:inputText
+                                                    id="cal02"
+                                                    value="#{StatisticalQuestionBean.currentPlugin.endDateText}"
+                                                    validatorMessage="#{msgs.statistics_wrong_date_format}">
+                                                    <f:validateRegex pattern="^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})?$"></f:validateRegex>
+
+                                                    <f:passThroughAttribute
+                                                        name="placeholder"
+                                                        value="YYYY-MM-DD" />
+                                                </h:inputText>
+                                                <h:message
+                                                    for="cal02"
+                                                    showDetail="true"
+                                                    styleClass="help-inline font-danger" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div
+                                            class="form-group"
+                                            style="border: none">
+                                            <h:outputLabel
+                                                for="field03"
+                                                styleClass="control-label"
+                                                value="#{msgs.einheit}" />
+                                            <h:selectOneMenu
+                                                id="field03"
+                                                value="#{StatisticalQuestionBean.currentPlugin.timeRange}"
+                                                styleClass="form-control">
+                                                <f:selectItem
+                                                    itemValue="'%Y-%m-%d'"
+                                                    itemLabel="#{msgs.days}" />
+                                                <f:selectItem
+                                                    itemValue="'%Y-%m'"
+                                                    itemLabel="#{msgs.months}" />
+                                                <f:selectItem
+                                                    itemValue="concat(YEAR(BearbeitungsEnde),'/',QUARTER(BearbeitungsEnde))"
+                                                    itemLabel="#{msgs.quarters}" />
+                                                <f:selectItem
+                                                    itemValue="'%Y'"
+                                                    itemLabel="#{msgs.years}" />
+
+                                            </h:selectOneMenu>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
-                                    <div
-                                        class="form-group"
-                                        style="border: none">
-                                        <h:outputLabel
-                                            for="field03"
-                                            styleClass="control-label"
-                                            value="#{msgs.einheit}" />
-                                        <h:selectOneMenu
-                                            id="field03"
-                                            value="#{StatisticalQuestionBean.currentPlugin.timeRange}"
-                                            styleClass="form-control">
-                                            <f:selectItem
-                                                itemValue="'%Y-%m-%d'"
-                                                itemLabel="#{msgs.days}" />
-                                            <f:selectItem
-                                                itemValue="'%Y-%m'"
-                                                itemLabel="#{msgs.months}" />
-                                            <f:selectItem
-                                                itemValue="concat(YEAR(BearbeitungsEnde),'/',QUARTER(BearbeitungsEnde))"
-                                                itemLabel="#{msgs.quarters}" />
-                                            <f:selectItem
-                                                itemValue="'%Y'"
-                                                itemLabel="#{msgs.years}" />
+                                <!-- Generate the statistics or cancel again -->
+                                <div
+                                    class="form-actions"
+                                    style="border-top: 1px solid #ddd;">
+                                    <h:commandButton
+                                        styleClass="btn btn-primary submitOnEnter pull-right font-size-s margin-bottom-most margin-sides-10"
+                                        id="myStatisticButton2"
+                                        type="submit"
+                                        title="#{msgs.plugin_statistics_sudan_calculateDetails}"
+                                        action="#{StatisticalQuestionBean.currentPlugin.calculateDetailData}"
+                                        value="#{msgs.plugin_statistics_sudan_calculateDetails}">
+                                    </h:commandButton>
 
-                                        </h:selectOneMenu>
-                                    </div>
+                                    <h:commandButton
+                                        styleClass="btn btn-primary submitOnEnter pull-right font-size-s margin-bottom-most margin-sides-10"
+                                        id="myStatisticButton"
+                                        type="submit"
+                                        title="#{msgs.plugin_statistics_sudan_calculateOverview}"
+                                        action="#{StatisticalQuestionBean.calculate}"
+                                        value="#{msgs.plugin_statistics_sudan_calculateOverview}">
+                                    </h:commandButton>
+
+
+                                    <h:commandButton
+                                        styleClass="btn margin-sides-10 font-size-s pull-right"
+                                        id="cancel"
+                                        title="#{msgs.calculateStatistics}"
+                                        action="#{StatisticalQuestionBean.currentPlugin.resetStatistics}"
+                                        value="#{msgs.abbrechen}">
+
+                                    </h:commandButton>
                                 </div>
-                            </div>
-                            <!-- Generate the statistics or cancel again -->
-                            <div
-                                class="form-actions"
-                                style="border-top: 1px solid #ddd;">
-                                <h:commandButton
-                                    styleClass="btn btn-primary submitOnEnter pull-right font-size-s margin-bottom-most margin-sides-10"
-                                    id="myStatisticButton2"
-                                    type="submit"
-                                    title="#{msgs.plugin_statistics_sudan_calculateDetails}"
-                                    action="#{StatisticalQuestionBean.currentPlugin.calculateDetailData}"
-                                    value="#{msgs.plugin_statistics_sudan_calculateDetails}">
-                                </h:commandButton>
+                                <!-- ###################### // input form ###################### -->
 
-                                <h:commandButton
-                                    styleClass="btn btn-primary submitOnEnter pull-right font-size-s margin-bottom-most margin-sides-10"
-                                    id="myStatisticButton"
-                                    type="submit"
-                                    title="#{msgs.plugin_statistics_sudan_calculateOverview}"
-                                    action="#{StatisticalQuestionBean.calculate}"
-                                    value="#{msgs.plugin_statistics_sudan_calculateOverview}">
-                                </h:commandButton>
-
-
-                                <h:commandButton
-                                    styleClass="btn margin-sides-10 font-size-s pull-right"
-                                    id="cancel"
-                                    title="#{msgs.calculateStatistics}"
-                                    action="#{StatisticalQuestionBean.currentPlugin.resetStatistics}"
-                                    value="#{msgs.abbrechen}">
-
-                                </h:commandButton>
-                            </div>
-                            <!-- ###################### // input form ###################### -->
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <h:panelGroup rendered="#{StatisticalQuestionBean.currentPlugin.resultListOverview != null}">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="box box-color lightgrey box-bordered">
-                            <div class="box-title">
-                                <h3>
-                                    <i class="fa fa-pie-chart"></i>
-                                    <h:outputText value="#{msgs.ergebnisse}" />
-                                </h3>
-                            </div>
-                            <div class="box-content nopadding">
-
-
-                                <!-- ###################### result table ###################### -->
-
-                                <div class="dataTables_wrapper">
-                                    <div class="dataTables_length">
-                                        <h:outputText value="#{msgs.treffer}: #{StatisticalQuestionBean.currentPlugin.resultListOverview.size()}" />
-                                    </div>
-
-
-
-                                    <x:dataTable
-                                        id="results"
-                                        styleClass="table table-hover table-nomargin dataTable table-bordered responsive"
-                                        var="item"
-                                        value="#{StatisticalQuestionBean.currentPlugin.resultListOverview}">
-
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_timeRange}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_timeRange}" />
-                                        </h:column>
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_titleCount}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_titleCount}" />
-                                        </h:column>
-
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_titlearabicCount}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_titlearabicCount}" />
-                                        </h:column>
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_descriptionCount}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_descriptionCount}" />
-                                        </h:column>
-
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_descriptionarabicCount}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_descriptionarabicCount}" />
-                                        </h:column>
-
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_workflowTitleCount}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_workflowTitleCount}" />
-                                        </h:column>
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_workflowTitle}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_workflowTitle}" />
-                                        </h:column>
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_userName}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_userName}" />
-                                        </h:column>
-
-                                    </x:dataTable>
-
-                                </div>
-
-                                <!-- ###################### // result table ###################### -->
-
-                            </div>
-                            <div class="form-actions">
-                                <h:commandButton
-                                    styleClass="btn btn-primary  pull-right font-size-s margin-bottom-most"
-                                    id="excelDownload"
-                                    type="submit"
-                                    title="#{msgs.download_excel}"
-                                    action="#{StatisticalQuestionBean.currentPlugin.generateExcelDownload}"
-                                    value="#{msgs.download_excel}">
-                                </h:commandButton>
                             </div>
                         </div>
                     </div>
                 </div>
-            </h:panelGroup>
+
+                <h:panelGroup rendered="#{StatisticalQuestionBean.currentPlugin.resultListOverview != null}">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="box box-color lightgrey box-bordered">
+                                <div class="box-title">
+                                    <h3>
+                                        <i class="fa fa-pie-chart"></i>
+                                        <h:outputText value="#{msgs.ergebnisse}" />
+                                    </h3>
+                                </div>
+                                <div class="box-content nopadding">
+
+
+                                    <!-- ###################### result table ###################### -->
+
+                                    <div class="dataTables_wrapper">
+                                        <div class="dataTables_length">
+                                            <h:outputText value="#{msgs.treffer}: #{StatisticalQuestionBean.currentPlugin.resultListOverview.size()}" />
+                                        </div>
 
 
 
-            <h:panelGroup rendered="#{StatisticalQuestionBean.currentPlugin.resultListDetails != null}">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="box box-color lightgrey box-bordered">
-                            <div class="box-title">
-                                <h3>
-                                    <i class="fa fa-pie-chart"></i>
-                                    <h:outputText value="#{msgs.ergebnisse}" />
-                                </h3>
-                            </div>
-                            <div class="box-content nopadding">
+                                        <x:dataTable
+                                            id="results"
+                                            styleClass="table table-hover table-nomargin dataTable table-bordered responsive"
+                                            var="item"
+                                            value="#{StatisticalQuestionBean.currentPlugin.resultListOverview}">
 
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_timeRange}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_timeRange}" />
+                                            </h:column>
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_titleCount}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_titleCount}" />
+                                            </h:column>
 
-                                <!-- ###################### result table ###################### -->
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_titlearabicCount}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_titlearabicCount}" />
+                                            </h:column>
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_descriptionCount}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_descriptionCount}" />
+                                            </h:column>
 
-                                <div class="dataTables_wrapper">
-                                    <div class="dataTables_length">
-                                        <h:outputText value="#{msgs.treffer}: #{StatisticalQuestionBean.currentPlugin.resultListDetails.size()}" />
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_descriptionarabicCount}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_descriptionarabicCount}" />
+                                            </h:column>
+
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_workflowTitleCount}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_workflowTitleCount}" />
+                                            </h:column>
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_workflowTitle}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_workflowTitle}" />
+                                            </h:column>
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_userName}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_userName}" />
+                                            </h:column>
+
+                                        </x:dataTable>
+
                                     </div>
 
-
-
-                                    <x:dataTable
-                                        id="resultsDetails"
-                                        styleClass="table table-hover table-nomargin dataTable table-bordered responsive"
-                                        var="item"
-                                        value="#{StatisticalQuestionBean.currentPlugin.resultListDetails}">
-
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_title}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_title}" />
-                                        </h:column>
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_titleCount}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_titleCount}" />
-                                        </h:column>                                        
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_titlearabic}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_titlearabic}" />
-                                        </h:column>
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_titlearabicCount}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_titlearabicCount}" />
-                                        </h:column>
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_description}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_description}" />
-                                        </h:column>
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_descriptionCount}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_descriptionCount}" />
-                                        </h:column>
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_descriptionarabic}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_descriptionarabic}" />
-                                        </h:column>
-                                        
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_descriptionarabicCount}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_descriptionarabicCount}" />
-                                        </h:column>
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_workflowTitle}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_workflowTitle}" />
-                                        </h:column>
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_processTitle}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_processTitle}" />
-                                        </h:column>
-                                        
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.plugin_statistics_sudan_userName}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item.plugin_statistics_sudan_userName}" />
-                                        </h:column>
-                                    </x:dataTable>
+                                    <!-- ###################### // result table ###################### -->
 
                                 </div>
-
-                                <!-- ###################### // result table ###################### -->
-
-                            </div>
-                            <div class="form-actions">
-                                <h:commandButton
-                                    styleClass="btn btn-primary  pull-right font-size-s margin-bottom-most"
-                                    id="excelDownload2"
-                                    type="submit"
-                                    title="#{msgs.download_excel}"
-                                    action="#{StatisticalQuestionBean.currentPlugin.generateExcelDownload}"
-                                    value="#{msgs.download_excel}">
-                                </h:commandButton>
+                                <div class="form-actions">
+                                    <h:commandButton
+                                        styleClass="btn btn-primary  pull-right font-size-s margin-bottom-most"
+                                        id="excelDownload"
+                                        type="submit"
+                                        title="#{msgs.download_excel}"
+                                        action="#{StatisticalQuestionBean.currentPlugin.generateExcelDownload}"
+                                        value="#{msgs.download_excel}">
+                                    </h:commandButton>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </h:panelGroup>
+                </h:panelGroup>
 
 
-            <style>
+
+                <h:panelGroup rendered="#{StatisticalQuestionBean.currentPlugin.resultListDetails != null}">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="box box-color lightgrey box-bordered">
+                                <div class="box-title">
+                                    <h3>
+                                        <i class="fa fa-pie-chart"></i>
+                                        <h:outputText value="#{msgs.ergebnisse}" />
+                                    </h3>
+                                </div>
+                                <div class="box-content nopadding">
+
+
+                                    <!-- ###################### result table ###################### -->
+
+                                    <div class="dataTables_wrapper">
+                                        <div class="dataTables_length">
+                                            <h:outputText value="#{msgs.treffer}: #{StatisticalQuestionBean.currentPlugin.resultListDetails.size()}" />
+                                        </div>
+
+
+
+                                        <x:dataTable
+                                            id="resultsDetails"
+                                            styleClass="table table-hover table-nomargin dataTable table-bordered responsive"
+                                            var="item"
+                                            value="#{StatisticalQuestionBean.currentPlugin.resultListDetails}">
+
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_title}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_title}" />
+                                            </h:column>
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_titleCount}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_titleCount}" />
+                                            </h:column>
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_titlearabic}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_titlearabic}" />
+                                            </h:column>
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_titlearabicCount}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_titlearabicCount}" />
+                                            </h:column>
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_description}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_description}" />
+                                            </h:column>
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_descriptionCount}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_descriptionCount}" />
+                                            </h:column>
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_descriptionarabic}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_descriptionarabic}" />
+                                            </h:column>
+
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_descriptionarabicCount}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_descriptionarabicCount}" />
+                                            </h:column>
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_workflowTitle}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_workflowTitle}" />
+                                            </h:column>
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_processTitle}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_processTitle}" />
+                                            </h:column>
+
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="#{msgs.plugin_statistics_sudan_userName}" />
+                                                </f:facet>
+                                                <h:outputText value="#{item.plugin_statistics_sudan_userName}" />
+                                            </h:column>
+                                        </x:dataTable>
+
+                                    </div>
+
+                                    <!-- ###################### // result table ###################### -->
+
+                                </div>
+                                <div class="form-actions">
+                                    <h:commandButton
+                                        styleClass="btn btn-primary  pull-right font-size-s margin-bottom-most"
+                                        id="excelDownload2"
+                                        type="submit"
+                                        title="#{msgs.download_excel}"
+                                        action="#{StatisticalQuestionBean.currentPlugin.generateExcelDownload}"
+                                        value="#{msgs.download_excel}">
+                                    </h:commandButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+
+                <style>
 .box.box-bordered .table.table-bordered {
     border-right: 1px solid #ddd;
 }
 </style>
-        </h:form>
-
+            </h:form>
+        </ui:fragment>
     </composite:implementation>
 
 </ui:composition>
