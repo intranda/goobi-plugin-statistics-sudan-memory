@@ -50,8 +50,8 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
 
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    private List<Map<String, String>> resultListExcel;
-    private List<Map<String, String>> resultList;
+    private List<Map<String, String>> resultListDetails;
+    private List<Map<String, String>> resultListOverview;
 
     private List<String> projectNames;
     private String project;
@@ -63,7 +63,8 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
     private String usergroup;
 
     private String timeRange = "%Y-%m";
-    private List<String> headerOrder = new ArrayList<>();
+    private List<String> headerOrderOverview = new ArrayList<>();
+    private List<String> headerOrderDetails = new ArrayList<>();
 
     @Override
     public String getGui() {
@@ -71,17 +72,27 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
     }
 
     public ActivityByUserPlugin() {
-        headerOrder.add("plugin_statistics_sudan_title");
-        headerOrder.add("plugin_statistics_sudan_titleCount");
-        headerOrder.add("plugin_statistics_sudan_titlearabic");
-        headerOrder.add("plugin_statistics_sudan_titlearabicCount");
-        headerOrder.add("plugin_statistics_sudan_description");
-        headerOrder.add("plugin_statistics_sudan_descriptionCount");
-        headerOrder.add("plugin_statistics_sudan_descriptionarabic");
-        headerOrder.add("plugin_statistics_sudan_descriptionarabicCount");
-        headerOrder.add("plugin_statistics_sudan_workflowTitle");
-        headerOrder.add("plugin_statistics_sudan_processTitle");
-        headerOrder.add("plugin_statistics_sudan_userName");
+        headerOrderOverview.add("plugin_statistics_sudan_timeRange");
+        headerOrderOverview.add("plugin_statistics_sudan_titleCount");
+        headerOrderOverview.add("plugin_statistics_sudan_titlearabicCount");
+        headerOrderOverview.add("plugin_statistics_sudan_descriptionCount");
+        headerOrderOverview.add("plugin_statistics_sudan_descriptionarabicCount");
+        headerOrderOverview.add("plugin_statistics_sudan_workflowTitleCount");
+        headerOrderOverview.add("plugin_statistics_sudan_workflowTitle");
+        headerOrderOverview.add("plugin_statistics_sudan_userName");
+
+        headerOrderDetails.add("plugin_statistics_sudan_title");
+        headerOrderDetails.add("plugin_statistics_sudan_titleCount");
+        headerOrderDetails.add("plugin_statistics_sudan_titlearabic");
+        headerOrderDetails.add("plugin_statistics_sudan_titlearabicCount");
+        headerOrderDetails.add("plugin_statistics_sudan_description");
+        headerOrderDetails.add("plugin_statistics_sudan_descriptionCount");
+        headerOrderDetails.add("plugin_statistics_sudan_descriptionarabic");
+        headerOrderDetails.add("plugin_statistics_sudan_descriptionarabicCount");
+        headerOrderDetails.add("plugin_statistics_sudan_workflowTitle");
+        headerOrderDetails.add("plugin_statistics_sudan_processTitle");
+        headerOrderDetails.add("plugin_statistics_sudan_userName");
+
     }
 
     @Override
@@ -192,6 +203,7 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
      */
 
     private void calculateData() {
+        resultListDetails = null;
         StringBuilder overview = new StringBuilder();
 
         overview.append("SELECT ");
@@ -203,6 +215,7 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         overview.append("WORDCOUNT(GROUP_CONCAT(m3.value SEPARATOR ' ')) AS plugin_statistics_sudan_descriptionCount, ");
         overview.append("WORDCOUNT(GROUP_CONCAT(m4.value SEPARATOR ' ')) AS plugin_statistics_sudan_descriptionarabicCount, ");
         overview.append("COUNT(s.Titel) AS plugin_statistics_sudan_workflowTitleCount, ");
+        overview.append("s.Titel AS plugin_statistics_sudan_workflowTitle, ");
         overview.append("CONCAT(u.Nachname, ', ', u.Vorname) AS plugin_statistics_sudan_userName ");
         overview.append("FROM ");
         overview.append("metadata m1 ");
@@ -241,10 +254,72 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
             overview.append("' ");
         }
 
-        overview.append("GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName; ");
+        overview.append("GROUP BY plugin_statistics_sudan_timeRange, plugin_statistics_sudan_userName, plugin_statistics_sudan_workflowTitle; ");
 
-        resultList = ControllingManager.getResultsAsMaps(overview.toString());
+        resultListOverview = ControllingManager.getResultsAsMaps(overview.toString());
 
+    }
+
+    public void calculateDetailData() {
+        resultListOverview = null;
+        StringBuilder details = new StringBuilder();
+        details.append("SELECT ");
+        //        details.append("m1.processid, ");
+        details.append("m1.value AS plugin_statistics_sudan_title, ");
+        details.append("WORDCOUNT(m1.value) AS plugin_statistics_sudan_titleCount, ");
+        details.append("m2.value AS plugin_statistics_sudan_titlearabic, ");
+        details.append("WORDCOUNT(m2.value) AS plugin_statistics_sudan_titlearabicCount, ");
+        details.append("m3.value AS plugin_statistics_sudan_description, ");
+        details.append("WORDCOUNT(m3.value) AS plugin_statistics_sudan_descriptionCount, ");
+        details.append("m4.value AS plugin_statistics_sudan_descriptionarabic, ");
+        details.append("WORDCOUNT(m4.value) AS plugin_statistics_sudan_descriptionarabicCount, ");
+        details.append("s.Titel AS plugin_statistics_sudan_workflowTitle, ");
+        details.append("p.Titel AS plugin_statistics_sudan_processTitle, ");
+        details.append("CONCAT(u.Nachname, ', ', u.Vorname) AS plugin_statistics_sudan_userName ");
+        details.append("FROM ");
+        details.append("metadata m1 ");
+        details.append("    JOIN ");
+        details.append("metadata m2 ON m1.processid = m2.processid ");
+        details.append("    JOIN ");
+        details.append("metadata m3 ON m1.processid = m3.processid ");
+        details.append("    JOIN ");
+        details.append("metadata m4 ON m1.processid = m4.processid ");
+        details.append("    JOIN ");
+        details.append("schritte s ON m1.processid = s.ProzesseID ");
+        details.append("    LEFT JOIN ");
+        details.append("prozesse p ON s.ProzesseID = p.ProzesseID ");
+        details.append("    LEFT JOIN ");
+        details.append("benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
+        details.append("WHERE ");
+        details.append("m1.name = 'TitleDocMain' ");
+        details.append("    AND m2.name = 'TitleDocMainArabic' ");
+        details.append("    AND m3.name = 'ContentDescription' ");
+        details.append("   AND m4.name = 'ContentDescriptionArabic' ");
+        details.append("    AND s.typMetadaten = TRUE ");
+        details.append("    AND s.titel like '%ranslat%' ");
+        details.append("    AND s.Bearbeitungsstatus = 3 ");
+
+        if (StringUtils.isNotBlank(startDateText) && StringUtils.isNotBlank(endDateText)) {
+            details.append("AND s.BearbeitungsEnde BETWEEN '");
+            details.append(startDateText);
+            details.append("' and '");
+            details.append(endDateText);
+            details.append("' ");
+        } else if (StringUtils.isNotBlank(startDateText)) {
+            details.append("AND s.BearbeitungsEnde >= '");
+            details.append(startDateText);
+            details.append("' ");
+        } else if (StringUtils.isNotBlank(endDateText)) {
+            details.append("AND s.BearbeitungsEnde <= '");
+            details.append(endDateText);
+            details.append("' ");
+        }
+
+        details.append(" ORDER BY ");
+        details.append("DATE_FORMAT(s.BearbeitungsEnde, ");
+        details.append(timeRange);
+        details.append("), plugin_statistics_sudan_userName ");
+        resultListDetails = ControllingManager.getResultsAsMaps(details.toString());
     }
 
     @Override
@@ -303,70 +378,23 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
     }
 
     public void resetStatistics() {
-        resultList = null;
+        resultListOverview = null;
+        resultListDetails = null;
     }
 
     public void generateExcelDownload() {
-
-        StringBuilder details = new StringBuilder();
-        details.append("SELECT ");
-        //        details.append("m1.processid, ");
-        details.append("m1.value AS plugin_statistics_sudan_title, ");
-        details.append("WORDCOUNT(m1.value) AS plugin_statistics_sudan_titleCount, ");
-        details.append("m2.value AS plugin_statistics_sudan_titlearabic, ");
-        details.append("WORDCOUNT(m2.value) AS plugin_statistics_sudan_titlearabicCount, ");
-        details.append("m3.value AS plugin_statistics_sudan_description, ");
-        details.append("WORDCOUNT(m3.value) AS plugin_statistics_sudan_descriptionCount, ");
-        details.append("m4.value AS plugin_statistics_sudan_descriptionarabic, ");
-        details.append("WORDCOUNT(m4.value) AS plugin_statistics_sudan_descriptionarabicCount, ");
-        details.append("s.Titel AS plugin_statistics_sudan_workflowTitle, ");
-        details.append("p.Titel AS plugin_statistics_sudan_processTitle, ");
-        details.append("CONCAT(u.Nachname, ', ', u.Vorname) AS plugin_statistics_sudan_userName ");
-        details.append("FROM ");
-        details.append("metadata m1 ");
-        details.append("    JOIN ");
-        details.append("metadata m2 ON m1.processid = m2.processid ");
-        details.append("    JOIN ");
-        details.append("metadata m3 ON m1.processid = m3.processid ");
-        details.append("    JOIN ");
-        details.append("metadata m4 ON m1.processid = m4.processid ");
-        details.append("    JOIN ");
-        details.append("schritte s ON m1.processid = s.ProzesseID ");
-        details.append("    LEFT JOIN ");
-        details.append("prozesse p ON s.ProzesseID = p.ProzesseID ");
-        details.append("    LEFT JOIN ");
-        details.append("benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
-        details.append("WHERE ");
-        details.append("m1.name = 'TitleDocMain' ");
-        details.append("    AND m2.name = 'TitleDocMainArabic' ");
-        details.append("    AND m3.name = 'ContentDescription' ");
-        details.append("   AND m4.name = 'ContentDescriptionArabic' ");
-        details.append("    AND s.typMetadaten = TRUE ");
-        details.append("    AND s.titel like '%ranslat%' ");
-        details.append("    AND s.Bearbeitungsstatus = 3 ");
-
-        if (StringUtils.isNotBlank(startDateText) && StringUtils.isNotBlank(endDateText)) {
-            details.append("AND s.BearbeitungsEnde BETWEEN '");
-            details.append(startDateText);
-            details.append("' and '");
-            details.append(endDateText);
-            details.append("' ");
-        } else if (StringUtils.isNotBlank(startDateText)) {
-            details.append("AND s.BearbeitungsEnde >= '");
-            details.append(startDateText);
-            details.append("' ");
-        } else if (StringUtils.isNotBlank(endDateText)) {
-            details.append("AND s.BearbeitungsEnde <= '");
-            details.append(endDateText);
-            details.append("' ");
+        List<Map<String, String>> resultList = null;
+        List<String> headerOrder= null;
+        if (resultListDetails!= null) {
+            resultList  = resultListDetails;
+            headerOrder = headerOrderDetails;
+        } else if (resultListOverview != null) {
+            resultList  = resultListOverview;
+            headerOrder = headerOrderOverview;
         }
 
-        details.append(" ORDER BY ");
-        details.append("DATE_FORMAT(s.BearbeitungsEnde, ");
-        details.append(timeRange);
-        details.append("), plugin_statistics_sudan_userName ");
-        resultListExcel = ControllingManager.getResultsAsMaps(details.toString());
-        if (resultListExcel.isEmpty()) {
+
+        if (resultList == null || resultList.isEmpty()) {
             Helper.setMeldung("No results to export.");
             return;
         }
@@ -385,7 +413,7 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
 
         int rowCounter = 1;
         // add results
-        for (Map<String, String> result : resultListExcel) {
+        for (Map<String, String> result : resultList) {
             Row resultRow = sheet.createRow(rowCounter);
             columnCounter = 0;
             for (String headerName : headerOrder) {

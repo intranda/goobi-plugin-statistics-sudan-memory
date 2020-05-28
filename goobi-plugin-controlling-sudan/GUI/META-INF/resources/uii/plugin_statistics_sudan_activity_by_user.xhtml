@@ -36,7 +36,9 @@
 
 
                                 <div class="col-sm-4">
-                                    <div class="form-group" style="border:none">
+                                    <div
+                                        class="form-group"
+                                        style="border: none">
                                         <h:outputLabel
                                             for="cal01"
                                             styleClass="control-label"
@@ -55,13 +57,15 @@
                                                 for="cal01"
                                                 showDetail="true"
                                                 styleClass="help-inline font-danger" />
-                 </div>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div class="col-sm-4">
 
-                                    <div class="form-group" style="border:none">
+                                    <div
+                                        class="form-group"
+                                        style="border: none">
                                         <h:outputLabel
                                             for="cal02"
                                             styleClass="control-label"
@@ -84,8 +88,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                 <div class="col-sm-4">
-                                    <div class="form-group" style="border:none">
+                                <div class="col-sm-4">
+                                    <div
+                                        class="form-group"
+                                        style="border: none">
                                         <h:outputLabel
                                             for="field03"
                                             styleClass="control-label"
@@ -112,15 +118,27 @@
                                 </div>
                             </div>
                             <!-- Generate the statistics or cancel again -->
-                            <div class="form-actions" style="border-top: 1px solid #ddd;">
+                            <div
+                                class="form-actions"
+                                style="border-top: 1px solid #ddd;">
                                 <h:commandButton
-                                    styleClass="btn btn-primary submitOnEnter pull-right font-size-s margin-bottom-most"
+                                    styleClass="btn btn-primary submitOnEnter pull-right font-size-s margin-bottom-most margin-sides-10"
+                                    id="myStatisticButton2"
+                                    type="submit"
+                                    title="#{msgs.plugin_statistics_sudan_calculateDetails}"
+                                    action="#{StatisticalQuestionBean.currentPlugin.calculateDetailData}"
+                                    value="#{msgs.plugin_statistics_sudan_calculateDetails}">
+                                </h:commandButton>
+
+                                <h:commandButton
+                                    styleClass="btn btn-primary submitOnEnter pull-right font-size-s margin-bottom-most margin-sides-10"
                                     id="myStatisticButton"
                                     type="submit"
-                                    title="#{msgs.calculateStatistics}"
+                                    title="#{msgs.plugin_statistics_sudan_calculateOverview}"
                                     action="#{StatisticalQuestionBean.calculate}"
-                                    value="#{msgs.calculateStatistics}">
+                                    value="#{msgs.plugin_statistics_sudan_calculateOverview}">
                                 </h:commandButton>
+
 
                                 <h:commandButton
                                     styleClass="btn margin-sides-10 font-size-s pull-right"
@@ -138,7 +156,7 @@
                 </div>
             </div>
 
-            <h:panelGroup rendered="#{StatisticalQuestionBean.currentPlugin.resultList != null}">
+            <h:panelGroup rendered="#{StatisticalQuestionBean.currentPlugin.resultListOverview != null}">
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="box box-color lightgrey box-bordered">
@@ -155,7 +173,7 @@
 
                                 <div class="dataTables_wrapper">
                                     <div class="dataTables_length">
-                                        <h:outputText value="#{msgs.treffer}: #{StatisticalQuestionBean.currentPlugin.resultList.size()}" />
+                                        <h:outputText value="#{msgs.treffer}: #{StatisticalQuestionBean.currentPlugin.resultListOverview.size()}" />
                                     </div>
 
 
@@ -164,15 +182,8 @@
                                         id="results"
                                         styleClass="table table-hover table-nomargin dataTable table-bordered responsive"
                                         var="item"
-                                        value="#{StatisticalQuestionBean.currentPlugin.resultList}">
-                                        <!-- 
-                                        <h:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="#{msgs.rawValue}" />
-                                            </f:facet>
-                                            <h:outputText value="#{item}" />
-                                        </h:column>
-                                         -->
+                                        value="#{StatisticalQuestionBean.currentPlugin.resultListOverview}">
+
                                         <h:column>
                                             <f:facet name="header">
                                                 <h:outputText value="#{msgs.plugin_statistics_sudan_timeRange}" />
@@ -212,8 +223,13 @@
                                             </f:facet>
                                             <h:outputText value="#{item.plugin_statistics_sudan_workflowTitleCount}" />
                                         </h:column>
-                                        
-                                                                                <h:column>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_sudan_workflowTitle}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_sudan_workflowTitle}" />
+                                        </h:column>
+                                        <h:column>
                                             <f:facet name="header">
                                                 <h:outputText value="#{msgs.plugin_statistics_sudan_userName}" />
                                             </f:facet>
@@ -240,8 +256,128 @@
                         </div>
                     </div>
                 </div>
-
             </h:panelGroup>
+
+
+
+            <h:panelGroup rendered="#{StatisticalQuestionBean.currentPlugin.resultListDetails != null}">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="box box-color lightgrey box-bordered">
+                            <div class="box-title">
+                                <h3>
+                                    <i class="fa fa-pie-chart"></i>
+                                    <h:outputText value="#{msgs.ergebnisse}" />
+                                </h3>
+                            </div>
+                            <div class="box-content nopadding">
+
+
+                                <!-- ###################### result table ###################### -->
+
+                                <div class="dataTables_wrapper">
+                                    <div class="dataTables_length">
+                                        <h:outputText value="#{msgs.treffer}: #{StatisticalQuestionBean.currentPlugin.resultListDetails.size()}" />
+                                    </div>
+
+
+
+                                    <x:dataTable
+                                        id="resultsDetails"
+                                        styleClass="table table-hover table-nomargin dataTable table-bordered responsive"
+                                        var="item"
+                                        value="#{StatisticalQuestionBean.currentPlugin.resultListDetails}">
+
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_sudan_title}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_sudan_title}" />
+                                        </h:column>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_sudan_titleCount}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_sudan_titleCount}" />
+                                        </h:column>                                        
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_sudan_titlearabic}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_sudan_titlearabic}" />
+                                        </h:column>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_sudan_titlearabicCount}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_sudan_titlearabicCount}" />
+                                        </h:column>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_sudan_description}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_sudan_description}" />
+                                        </h:column>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_sudan_descriptionCount}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_sudan_descriptionCount}" />
+                                        </h:column>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_sudan_descriptionarabic}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_sudan_descriptionarabic}" />
+                                        </h:column>
+                                        
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_sudan_descriptionarabicCount}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_sudan_descriptionarabicCount}" />
+                                        </h:column>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_sudan_workflowTitle}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_sudan_workflowTitle}" />
+                                        </h:column>
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_sudan_processTitle}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_sudan_processTitle}" />
+                                        </h:column>
+                                        
+                                        <h:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="#{msgs.plugin_statistics_sudan_userName}" />
+                                            </f:facet>
+                                            <h:outputText value="#{item.plugin_statistics_sudan_userName}" />
+                                        </h:column>
+                                    </x:dataTable>
+
+                                </div>
+
+                                <!-- ###################### // result table ###################### -->
+
+                            </div>
+                            <div class="form-actions">
+                                <h:commandButton
+                                    styleClass="btn btn-primary  pull-right font-size-s margin-bottom-most"
+                                    id="excelDownload2"
+                                    type="submit"
+                                    title="#{msgs.download_excel}"
+                                    action="#{StatisticalQuestionBean.currentPlugin.generateExcelDownload}"
+                                    value="#{msgs.download_excel}">
+                                </h:commandButton>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+
 
             <style>
 .box.box-bordered .table.table-bordered {
