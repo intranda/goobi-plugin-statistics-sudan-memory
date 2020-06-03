@@ -215,8 +215,6 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         if (endDateDate != null) {
             endDateText = dateFormat.format(endDateDate);
         }
-        System.out.println(startDateText);
-        System.out.println(endDateText);
         resultListDetails = null;
         StringBuilder overview = new StringBuilder();
 
@@ -401,8 +399,8 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
     public void resetStatistics() {
         resultListOverview = null;
         resultListDetails = null;
-        startDate=null;
-        endDate=null;
+        startDateDate=null;
+        endDateDate=null;
         startDateText=null;
         endDateText=null;
     }
