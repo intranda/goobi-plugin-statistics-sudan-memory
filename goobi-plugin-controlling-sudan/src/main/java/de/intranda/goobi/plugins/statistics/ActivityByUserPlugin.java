@@ -210,9 +210,9 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
     private void calculateData() {
 
         if (startDateDate != null) {
-            startDateText = dateFormat.format(endDateDate);
+            startDateText = dateFormat.format(startDateDate);
         }
-        if (startDateDate != null) {
+        if (endDateDate != null) {
             endDateText = dateFormat.format(endDateDate);
         }
         System.out.println(startDateText);
