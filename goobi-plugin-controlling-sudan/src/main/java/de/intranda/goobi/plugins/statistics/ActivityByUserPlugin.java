@@ -276,12 +276,11 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
 
     public void calculateDetailData() {
         if (startDateDate != null) {
-            startDateText = dateFormat.format(endDateDate);
+            startDateText = dateFormat.format(startDateDate);
         }
-        if (startDateDate != null) {
+        if (endDateDate != null) {
             endDateText = dateFormat.format(endDateDate);
         }
-
 
         resultListOverview = null;
         StringBuilder details = new StringBuilder();
