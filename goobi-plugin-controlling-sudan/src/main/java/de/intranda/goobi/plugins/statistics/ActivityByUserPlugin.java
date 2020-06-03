@@ -48,6 +48,10 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
     private String startDateText;
     private String endDateText;
 
+    private Date startDateDate;
+    private Date endDateDate;
+
+
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private List<Map<String, String>> resultListDetails;
@@ -65,6 +69,7 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
     private String timeRange = "%Y-%m";
     private List<String> headerOrderOverview = new ArrayList<>();
     private List<String> headerOrderDetails = new ArrayList<>();
+
 
     @Override
     public String getGui() {
@@ -203,6 +208,15 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
      */
 
     private void calculateData() {
+
+        if (startDateDate != null) {
+            startDateText = dateFormat.format(endDateDate);
+        }
+        if (startDateDate != null) {
+            endDateText = dateFormat.format(endDateDate);
+        }
+        System.out.println(startDateText);
+        System.out.println(endDateText);
         resultListDetails = null;
         StringBuilder overview = new StringBuilder();
 
@@ -261,6 +275,14 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
     }
 
     public void calculateDetailData() {
+        if (startDateDate != null) {
+            startDateText = dateFormat.format(endDateDate);
+        }
+        if (startDateDate != null) {
+            endDateText = dateFormat.format(endDateDate);
+        }
+
+
         resultListOverview = null;
         StringBuilder details = new StringBuilder();
         details.append("SELECT ");
@@ -380,19 +402,22 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
     public void resetStatistics() {
         resultListOverview = null;
         resultListDetails = null;
+        startDate=null;
+        endDate=null;
+        startDateText=null;
+        endDateText=null;
     }
 
     public void generateExcelDownload() {
         List<Map<String, String>> resultList = null;
-        List<String> headerOrder= null;
-        if (resultListDetails!= null) {
-            resultList  = resultListDetails;
+        List<String> headerOrder = null;
+        if (resultListDetails != null) {
+            resultList = resultListDetails;
             headerOrder = headerOrderDetails;
         } else if (resultListOverview != null) {
-            resultList  = resultListOverview;
+            resultList = resultListOverview;
             headerOrder = headerOrderOverview;
         }
-
 
         if (resultList == null || resultList.isEmpty()) {
             Helper.setMeldung("No results to export.");

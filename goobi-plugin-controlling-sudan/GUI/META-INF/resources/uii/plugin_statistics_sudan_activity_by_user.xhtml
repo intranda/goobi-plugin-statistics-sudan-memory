@@ -49,16 +49,34 @@
                                                 for="cal01"
                                                 styleClass="control-label"
                                                 value="#{msgs.zeitraum} #{msgs.from}" />
+
+
+
                                             <div style="display: block">
-                                                <h:inputText
+                                                <p:calendar
+                                                    validatorMessage="#{msgs.statistics_wrong_date_format}"
                                                     id="cal01"
-                                                    value="#{StatisticalQuestionBean.currentPlugin.startDateText}"
-                                                    validatorMessage="#{msgs.statistics_wrong_date_format}">
-                                                    <f:validateRegex pattern="^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})?$"></f:validateRegex>
+                                                    value="#{StatisticalQuestionBean.currentPlugin.startDate}"
+                                                    pattern="yyyy-MM-dd"
+                                                    required="false">
                                                     <f:passThroughAttribute
                                                         name="placeholder"
                                                         value="YYYY-MM-DD" />
-                                                </h:inputText>
+                                                    <f:passThroughAttribute
+                                                        name="autocomplete"
+                                                        value="off" />
+                                                </p:calendar>
+
+
+                                                <!--                                                 <h:inputText -->
+                                                <!--                                                     id="cal01" -->
+                                                <!--                                                     value="#{StatisticalQuestionBean.currentPlugin.startDateText}" -->
+                                                <!--                                                     validatorMessage="#{msgs.statistics_wrong_date_format}"> -->
+                                                <!--                                                     <f:validateRegex pattern="^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})?$"></f:validateRegex> -->
+                                                <!--                                                     <f:passThroughAttribute -->
+                                                <!--                                                         name="placeholder" -->
+                                                <!--                                                         value="YYYY-MM-DD" /> -->
+                                                <!--                                                 </h:inputText> -->
                                                 <h:message
                                                     for="cal01"
                                                     showDetail="true"
@@ -77,16 +95,29 @@
                                                 styleClass="control-label"
                                                 value="#{msgs.zeitraum} #{msgs.to}" />
                                             <div style="display: block">
-                                                <h:inputText
+                                                <p:calendar
+                                                    validatorMessage="#{msgs.statistics_wrong_date_format}"
                                                     id="cal02"
-                                                    value="#{StatisticalQuestionBean.currentPlugin.endDateText}"
-                                                    validatorMessage="#{msgs.statistics_wrong_date_format}">
-                                                    <f:validateRegex pattern="^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})?$"></f:validateRegex>
-
+                                                    value="#{StatisticalQuestionBean.currentPlugin.endDate}"
+                                                    pattern="yyyy-MM-dd"
+                                                    required="false">
                                                     <f:passThroughAttribute
                                                         name="placeholder"
                                                         value="YYYY-MM-DD" />
-                                                </h:inputText>
+                                                    <f:passThroughAttribute
+                                                        name="autocomplete"
+                                                        value="off" />
+                                                </p:calendar>
+                                                <!--                                                 <h:inputText -->
+                                                <!--                                                     id="cal02" -->
+                                                <!--                                                     value="#{StatisticalQuestionBean.currentPlugin.endDateText}" -->
+                                                <!--                                                     validatorMessage="#{msgs.statistics_wrong_date_format}"> -->
+                                                <!--                                                     <f:validateRegex pattern="^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})?$"></f:validateRegex> -->
+
+                                                <!--                                                     <f:passThroughAttribute -->
+                                                <!--                                                         name="placeholder" -->
+                                                <!--                                                         value="YYYY-MM-DD" /> -->
+                                                <!--                                                 </h:inputText> -->
                                                 <h:message
                                                     for="cal02"
                                                     showDetail="true"
