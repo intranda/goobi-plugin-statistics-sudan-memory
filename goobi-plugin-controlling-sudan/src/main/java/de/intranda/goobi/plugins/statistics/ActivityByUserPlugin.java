@@ -51,7 +51,6 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
     private Date startDateDate;
     private Date endDateDate;
 
-
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private List<Map<String, String>> resultListDetails;
@@ -69,7 +68,6 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
     private String timeRange = "%Y-%m";
     private List<String> headerOrderOverview = new ArrayList<>();
     private List<String> headerOrderDetails = new ArrayList<>();
-
 
     @Override
     public String getGui() {
@@ -248,7 +246,14 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         overview.append("    AND m4.name = 'ContentDescriptionArabic' ");
         overview.append("    AND s.typMetadaten = TRUE ");
         overview.append("    AND s.Bearbeitungsstatus = 3 ");
-        overview.append("    AND s.titel like '%ranslat%' ");
+        overview.append("    AND s.titel in (");
+        overview.append("'Translation of Arabic content to English', ");
+        overview.append("'Translation of English content to Arabic', ");
+        overview.append("'Editing English metadata', ");
+        overview.append("'Proof Reading Arabic metadata', ");
+        overview.append("'Arabic metadata quality check', ");
+        overview.append("'Transcribing English Captions' ");
+        overview.append(") ");
 
         if (StringUtils.isNotBlank(startDateText) && StringUtils.isNotBlank(endDateText)) {
             overview.append("AND s.BearbeitungsEnde BETWEEN '");
@@ -315,7 +320,14 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         details.append("    AND m3.name = 'ContentDescription' ");
         details.append("   AND m4.name = 'ContentDescriptionArabic' ");
         details.append("    AND s.typMetadaten = TRUE ");
-        details.append("    AND s.titel like '%ranslat%' ");
+        details.append("    AND s.titel in (");
+        details.append("'Translation of Arabic content to English', ");
+        details.append("'Translation of English content to Arabic', ");
+        details.append("'Editing English metadata', ");
+        details.append("'Proof Reading Arabic metadata', ");
+        details.append("'Arabic metadata quality check', ");
+        details.append("'Transcribing English Captions' ");
+        details.append(") ");
         details.append("    AND s.Bearbeitungsstatus = 3 ");
 
         if (StringUtils.isNotBlank(startDateText) && StringUtils.isNotBlank(endDateText)) {
@@ -399,10 +411,10 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
     public void resetStatistics() {
         resultListOverview = null;
         resultListDetails = null;
-        startDateDate=null;
-        endDateDate=null;
-        startDateText=null;
-        endDateText=null;
+        startDateDate = null;
+        endDateDate = null;
+        startDateText = null;
+        endDateText = null;
     }
 
     public void generateExcelDownload() {

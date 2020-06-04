@@ -140,6 +140,9 @@
                                                 <f:selectItem
                                                     itemValue="'%Y-%m-%d'"
                                                     itemLabel="#{msgs.days}" />
+                                             <f:selectItem
+                                                    itemValue="concat(YEAR(BearbeitungsEnde),'/',WEEK(BearbeitungsEnde))"
+                                                    itemLabel="#{msgs.weeks}" />  
                                                 <f:selectItem
                                                     itemValue="'%Y-%m'"
                                                     itemLabel="#{msgs.months}" />
