@@ -2,6 +2,9 @@ package de.intranda.goobi.plugins.statistics;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,8 +13,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -23,51 +29,58 @@ import org.goobi.production.plugin.interfaces.IStatisticPlugin;
 import de.sub.goobi.helper.FacesContextHelper;
 import de.sub.goobi.helper.Helper;
 import de.sub.goobi.persistence.managers.ControllingManager;
-import de.sub.goobi.persistence.managers.ProjectManager;
-import de.sub.goobi.persistence.managers.StepManager;
-import de.sub.goobi.persistence.managers.UsergroupManager;
-import lombok.Data;
+import de.sub.goobi.persistence.managers.MySQLHelper;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 @Log4j2
-@Data
+
 @PluginImplementation
 public class ActivityByUserPlugin implements IStatisticPlugin {
 
+    @Getter
     private String title = "plugin_statistics_sudan_activity_by_user";
-
+    @Getter
     private PluginType type = PluginType.Statistics;
 
-    private int projectId;
+    @Getter
+    @Setter
     private String filter;
-
+    @Getter
+    @Setter
     private Date startDate;
+    @Getter
+    @Setter
     private Date endDate;
 
     private String startDateText;
     private String endDateText;
-
+    @Getter
+    @Setter
     private Date startDateDate;
+    @Getter
+    @Setter
     private Date endDateDate;
 
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
+    @Getter
+    @Setter
     private List<Map<String, String>> resultListDetails;
+    @Getter
+    @Setter
     private List<Map<String, String>> resultListOverview;
-
-    private List<String> projectNames;
-    private String project;
-
-    private List<String> stepNames;
-    private String step;
-
-    private List<String> usergroupNames;
-    private String usergroup;
-
+    @Getter
+    @Setter
     private String timeRange = "%Y-%m";
     private List<String> headerOrderOverview = new ArrayList<>();
     private List<String> headerOrderDetails = new ArrayList<>();
+    @Getter
+    private List<SelectItem> userNames;
+    @Getter
+    @Setter
+    private String userName;
 
     @Override
     public String getGui() {
@@ -96,6 +109,43 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         headerOrderDetails.add("plugin_statistics_sudan_processTitle");
         headerOrderDetails.add("plugin_statistics_sudan_userName");
 
+        try {
+            userNames = generateUserNames();
+        } catch (SQLException e) {
+            log.error(e);
+        }
+    }
+
+    private List<SelectItem> generateUserNames() throws SQLException {
+        List<SelectItem> itemList = new ArrayList<>();
+        StringBuilder userNameQuery = new StringBuilder();
+
+        userNameQuery.append("SELECT  ");
+        userNameQuery.append("DISTINCT (s.BearbeitungsBenutzerID) as id, CONCAT(u.Nachname, ', ', u.Vorname) AS name ");
+        userNameQuery.append("FROM ");
+        userNameQuery.append("schritte s ");
+        userNameQuery.append("INNER JOIN ");
+        userNameQuery.append("benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
+        userNameQuery.append("WHERE ");
+        userNameQuery.append("s.typMetadaten = TRUE ");
+        userNameQuery.append("AND s.Bearbeitungsstatus = 3 ");
+        userNameQuery.append("AND s.titel IN ('Translation of Arabic content to English' , 'Translation of English content to Arabic', ");
+        userNameQuery.append("'Editing English metadata', ");
+        userNameQuery.append("'Proof Reading Arabic metadata', ");
+        userNameQuery.append("'Arabic metadata quality check', ");
+        userNameQuery.append("'Transcribing English Captions') ");
+        userNameQuery.append("ORDER BY name; ");
+
+        Connection connection = null;
+        try {
+            connection = MySQLHelper.getInstance().getConnection();
+            itemList = new QueryRunner().query(connection, userNameQuery.toString(), resultSetHandler);
+        } finally {
+            if (connection != null) {
+                MySQLHelper.closeConnection(connection);
+            }
+        }
+        return itemList;
     }
 
     @Override
@@ -255,6 +305,12 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         overview.append("'Transcribing English Captions' ");
         overview.append(") ");
 
+        if (StringUtils.isNotBlank(userName)) {
+            overview.append("AND s.BearbeitungsBenutzerID = ");
+            overview.append(userName);
+            overview.append(" ");
+        }
+
         if (StringUtils.isNotBlank(startDateText) && StringUtils.isNotBlank(endDateText)) {
             overview.append("AND s.BearbeitungsEnde BETWEEN '");
             overview.append(startDateText);
@@ -330,6 +386,12 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         details.append(") ");
         details.append("    AND s.Bearbeitungsstatus = 3 ");
 
+        if (StringUtils.isNotBlank(userName)) {
+            details.append("AND s.BearbeitungsBenutzerID = ");
+            details.append(userName);
+            details.append(" ");
+        }
+
         if (StringUtils.isNotBlank(startDateText) && StringUtils.isNotBlank(endDateText)) {
             details.append("AND s.BearbeitungsEnde BETWEEN '");
             details.append(startDateText);
@@ -378,34 +440,6 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
             return dateFormat.format(endDate);
         }
         return null;
-    }
-
-    public List<String> getProjectNames() {
-        if (projectNames == null || projectNames.isEmpty()) {
-            projectNames = new ArrayList<>();
-            projectNames.add("");
-            projectNames.addAll(ProjectManager.getAllProjectTitles(false));
-        }
-
-        return projectNames;
-    }
-
-    public List<String> getStepNames() {
-        if (stepNames == null || stepNames.isEmpty()) {
-            stepNames = new ArrayList<>();
-            stepNames.add("");
-            stepNames.addAll(StepManager.getDistinctStepTitles());
-        }
-        return stepNames;
-    }
-
-    public List<String> getUsergroupNames() {
-        if (usergroupNames == null || usergroupNames.isEmpty()) {
-            usergroupNames = new ArrayList<>();
-            usergroupNames.add("");
-            usergroupNames.addAll(UsergroupManager.getAllUsergroupNames());
-        }
-        return usergroupNames;
     }
 
     public void resetStatistics() {
@@ -478,6 +512,18 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
             log.error(e);
         }
     }
+
+    private static ResultSetHandler<List<SelectItem>> resultSetHandler = new ResultSetHandler<List<SelectItem>>() {
+        @Override
+        public List<SelectItem> handle(ResultSet rs) throws SQLException {
+            List<SelectItem> answer = new ArrayList<>();
+            answer.add(new SelectItem("", ""));
+            while (rs.next()) {
+                answer.add(new SelectItem(rs.getString("id"), rs.getString("name")));
+            }
+            return answer;
+        }
+    };
 
     @Override
     public String getData() {

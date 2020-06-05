@@ -39,9 +39,34 @@
                             <div class="box-content nopadding">
                                 <div class="row">
                                     <!-- ###################### input form ###################### -->
+<div class="col-sm-3">
+                                        <div
+                                            class="form-group"
+                                            style="border: none">
+                                            <h:outputLabel
+                                                for="user"
+                                                styleClass="control-label"
+                                                value="#{msgs.plugin_statistics_sudan_userName}" />
 
 
-                                    <div class="col-sm-4">
+
+                                            <div style="display: block">
+                                                <h:selectOneMenu
+                                                id="user"
+                                                value="#{StatisticalQuestionBean.currentPlugin.userName}"
+                                                styleClass="form-control">
+                                                <f:selectItems value="#{StatisticalQuestionBean.currentPlugin.userNames}" />   
+
+</h:selectOneMenu>
+                                                <h:message
+                                                    for="user"
+                                                    showDetail="true"
+                                                    styleClass="help-inline font-danger" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-3">
                                         <div
                                             class="form-group"
                                             style="border: none">
@@ -67,16 +92,6 @@
                                                         value="off" />
                                                 </p:calendar>
 
-
-                                                <!--                                                 <h:inputText -->
-                                                <!--                                                     id="cal01" -->
-                                                <!--                                                     value="#{StatisticalQuestionBean.currentPlugin.startDateText}" -->
-                                                <!--                                                     validatorMessage="#{msgs.statistics_wrong_date_format}"> -->
-                                                <!--                                                     <f:validateRegex pattern="^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})?$"></f:validateRegex> -->
-                                                <!--                                                     <f:passThroughAttribute -->
-                                                <!--                                                         name="placeholder" -->
-                                                <!--                                                         value="YYYY-MM-DD" /> -->
-                                                <!--                                                 </h:inputText> -->
                                                 <h:message
                                                     for="cal01"
                                                     showDetail="true"
@@ -85,7 +100,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-3">
 
                                         <div
                                             class="form-group"
@@ -108,16 +123,7 @@
                                                         name="autocomplete"
                                                         value="off" />
                                                 </p:calendar>
-                                                <!--                                                 <h:inputText -->
-                                                <!--                                                     id="cal02" -->
-                                                <!--                                                     value="#{StatisticalQuestionBean.currentPlugin.endDateText}" -->
-                                                <!--                                                     validatorMessage="#{msgs.statistics_wrong_date_format}"> -->
-                                                <!--                                                     <f:validateRegex pattern="^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})?$"></f:validateRegex> -->
 
-                                                <!--                                                     <f:passThroughAttribute -->
-                                                <!--                                                         name="placeholder" -->
-                                                <!--                                                         value="YYYY-MM-DD" /> -->
-                                                <!--                                                 </h:inputText> -->
                                                 <h:message
                                                     for="cal02"
                                                     showDetail="true"
@@ -125,7 +131,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-3">
                                         <div
                                             class="form-group"
                                             style="border: none">
@@ -140,9 +146,9 @@
                                                 <f:selectItem
                                                     itemValue="'%Y-%m-%d'"
                                                     itemLabel="#{msgs.days}" />
-                                             <f:selectItem
+                                                <f:selectItem
                                                     itemValue="concat(YEAR(BearbeitungsEnde),'/',WEEK(BearbeitungsEnde))"
-                                                    itemLabel="#{msgs.weeks}" />  
+                                                    itemLabel="#{msgs.weeks}" />
                                                 <f:selectItem
                                                     itemValue="'%Y-%m'"
                                                     itemLabel="#{msgs.months}" />
