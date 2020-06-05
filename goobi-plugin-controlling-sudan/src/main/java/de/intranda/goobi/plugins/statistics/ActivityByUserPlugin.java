@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -485,7 +486,14 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
             Row resultRow = sheet.createRow(rowCounter);
             columnCounter = 0;
             for (String headerName : headerOrder) {
-                resultRow.createCell(columnCounter).setCellValue(result.get(headerName));
+                String val = result.get(headerName);
+                if (StringUtils.isNumeric(val)) {
+                    resultRow.createCell(columnCounter, CellType.NUMERIC).setCellValue(Integer.parseInt(val));
+                } else {
+                    resultRow.createCell(columnCounter).setCellValue(val);
+
+                }
+
                 columnCounter = columnCounter + 1;
             }
             rowCounter = rowCounter + 1;
