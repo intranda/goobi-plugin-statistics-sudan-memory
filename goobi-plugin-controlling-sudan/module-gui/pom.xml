@@ -69,4 +69,4 @@
             </configuration>
         </plugin></plugins>
 	</build>
-<scm><url>scm:git:ssh://git@gitea.intranda.com:goobi-workflow/goobi-plugin-controlling-sudan.git</url><connection>scm:git:ssh://git@gitea.intranda.com:goobi-workflow/goobi-plugin-controlling-sudan.git</connection></scm></project>
+<scm><url>scm:git:ssh://git@gitea.intranda.com:goobi-workflow/goobi-plugin-statistics-sudan.git</url><connection>scm:git:ssh://git@gitea.intranda.com:goobi-workflow/goobi-plugin-statistics-sudan.git</connection></scm></project>

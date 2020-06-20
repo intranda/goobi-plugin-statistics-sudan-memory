@@ -1,4 +1,4 @@
-<project name="goobi-plugin-controlling-sudan" default="devbuild">
+<project name="goobi-plugin-statistics-sudan" default="devbuild">
 	<target name="devbuild">
 		<exec executable="mvn">
 			<arg value="package"/>
