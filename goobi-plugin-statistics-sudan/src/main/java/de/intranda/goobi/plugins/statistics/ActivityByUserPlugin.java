@@ -267,15 +267,25 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         resultListDetails = null;
         StringBuilder overview = new StringBuilder();
 
-        overview.append("SELECT ");
+        overview.append("SELECT  ");
+        overview.append("plugin_statistics_sudan_timeRange, ");
+        overview.append("SUM(plugin_statistics_sudan_titleCount) AS plugin_statistics_sudan_titleCount, ");
+        overview.append("SUM(plugin_statistics_sudan_titlearabicCount) AS plugin_statistics_sudan_titlearabicCount, ");
+        overview.append("SUM(plugin_statistics_sudan_descriptionCount) AS plugin_statistics_sudan_descriptionCount, ");
+        overview.append("SUM(plugin_statistics_sudan_descriptionarabicCount) AS plugin_statistics_sudan_descriptionarabicCount, ");
+        overview.append("COUNT(plugin_statistics_sudan_workflowTitle) AS plugin_statistics_sudan_workflowTitleCount, ");
+        overview.append("plugin_statistics_sudan_workflowTitle, ");
+        overview.append("plugin_statistics_sudan_userName ");
+        overview.append("FROM ");
+
+        overview.append("(SELECT ");
         overview.append("DATE_FORMAT(s.BearbeitungsEnde, ");
         overview.append(timeRange);
         overview.append(") AS plugin_statistics_sudan_timeRange, ");
-        overview.append("WORDCOUNT(GROUP_CONCAT(m1.value SEPARATOR ' ')) AS plugin_statistics_sudan_titleCount, ");
-        overview.append("WORDCOUNT(GROUP_CONCAT(m2.value SEPARATOR ' ')) AS plugin_statistics_sudan_titlearabicCount, ");
-        overview.append("WORDCOUNT(GROUP_CONCAT(m3.value SEPARATOR ' ')) AS plugin_statistics_sudan_descriptionCount, ");
-        overview.append("WORDCOUNT(GROUP_CONCAT(m4.value SEPARATOR ' ')) AS plugin_statistics_sudan_descriptionarabicCount, ");
-        overview.append("COUNT(s.Titel) AS plugin_statistics_sudan_workflowTitleCount, ");
+        overview.append("WORDCOUNT(m1.value) AS plugin_statistics_sudan_titleCount, ");
+        overview.append("WORDCOUNT(m2.value) AS plugin_statistics_sudan_titlearabicCount, ");
+        overview.append("WORDCOUNT(m3.value) AS plugin_statistics_sudan_descriptionCount, ");
+        overview.append("WORDCOUNT(m4.value) AS plugin_statistics_sudan_descriptionarabicCount, ");
         overview.append("s.Titel AS plugin_statistics_sudan_workflowTitle, ");
         overview.append("CONCAT(u.Nachname, ', ', u.Vorname) AS plugin_statistics_sudan_userName ");
         overview.append("FROM ");
@@ -327,6 +337,9 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
             overview.append(endDateText);
             overview.append("' ");
         }
+
+
+        overview.append(") a " );
 
         overview.append("GROUP BY plugin_statistics_sudan_timeRange, plugin_statistics_sudan_userName, plugin_statistics_sudan_workflowTitle; ");
 
