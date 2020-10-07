@@ -195,35 +195,45 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
 
 
     SELECT
-    DATE_FORMAT(s.BearbeitungsEnde, '%Y-%m') AS plugin_statistics_sudan_timeRange,
-    WORDCOUNT(GROUP_CONCAT(m1.value SEPARATOR ' ')) AS plugin_statistics_sudan_titleCount,
-    WORDCOUNT(GROUP_CONCAT(m2.value SEPARATOR ' ')) AS plugin_statistics_sudan_titlearabicCount,
-    WORDCOUNT(GROUP_CONCAT(m3.value SEPARATOR ' ')) AS plugin_statistics_sudan_descriptionCount,
-    WORDCOUNT(GROUP_CONCAT(m4.value SEPARATOR ' ')) AS plugin_statistics_sudan_descriptionarabicCount,
-    COUNT(s.Titel) AS plugin_statistics_sudan_workflowTitleCount,
-    CONCAT(u.Nachname, ', ', u.Vorname) AS plugin_statistics_sudan_userName
+        plugin_statistics_sudan_timeRange,
+        SUM(plugin_statistics_sudan_titleCount) AS plugin_statistics_sudan_titleCount,
+        SUM(plugin_statistics_sudan_titlearabicCount) AS plugin_statistics_sudan_titlearabicCount,
+        SUM(plugin_statistics_sudan_descriptionCount) AS plugin_statistics_sudan_descriptionCount,
+        SUM(plugin_statistics_sudan_descriptionarabicCount) AS plugin_statistics_sudan_descriptionarabicCount,
+        COUNT(plugin_statistics_sudan_workflowTitle) AS plugin_statistics_sudan_workflowTitleCount,
+        plugin_statistics_sudan_workflowTitle,
+        plugin_statistics_sudan_userName
     FROM
-    metadata m1
-        JOIN
-    metadata m2 ON m1.processid = m2.processid
-        JOIN
-    metadata m3 ON m1.processid = m3.processid
-        JOIN
-    metadata m4 ON m1.processid = m4.processid
-        JOIN
-    schritte s ON m1.processid = s.ProzesseID
-        LEFT JOIN
-    benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID
+        (SELECT
+            DATE_FORMAT(s.BearbeitungsEnde, '%Y') AS plugin_statistics_sudan_timeRange,
+                WORDCOUNT(m1.value) AS plugin_statistics_sudan_titleCount,
+                WORDCOUNT(m2.value) AS plugin_statistics_sudan_titlearabicCount,
+                WORDCOUNT(m3.value) AS plugin_statistics_sudan_descriptionCount,
+                WORDCOUNT(m4.value) AS plugin_statistics_sudan_descriptionarabicCount,
+                s.Titel AS plugin_statistics_sudan_workflowTitle,
+                CONCAT(u.Nachname, ', ', u.Vorname) AS plugin_statistics_sudan_userName
+    FROM
+        metadata m1
+            JOIN
+        metadata m2 ON m1.processid = m2.processid
+            JOIN
+        metadata m3 ON m1.processid = m3.processid
+            JOIN
+        metadata m4 ON m1.processid = m4.processid
+            JOIN
+        schritte s ON m1.processid = s.ProzesseID
+            LEFT JOIN
+        benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID
     WHERE
-    m1.name = 'TitleDocMain'
-        AND m2.name = 'TitleDocMainArabic'
-        AND m3.name = 'ContentDescription'
-        AND m4.name = 'ContentDescriptionArabic'
-        AND s.typMetadaten = TRUE
-        AND s.Bearbeitungsstatus = 3
-        AND s.titel like '%ranslat%'
-        AND s.BearbeitungsEnde BETWEEN '2019-01-01' AND '2020-12-31'
-    GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName;
+        m1.name = 'TitleDocMain'
+            AND m2.name = 'TitleDocMainArabic'
+            AND m3.name = 'ContentDescription'
+            AND m4.name = 'ContentDescriptionArabic'
+            AND s.typMetadaten = TRUE
+            AND s.Bearbeitungsstatus = 3
+            AND s.titel like '%ranslat%'
+            AND s.BearbeitungsEnde BETWEEN '2019-01-01' AND '2020-12-31' ) a
+  GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName , plugin_statistics_sudan_workflowTitle;
 
 
     drop function wordcount;
