@@ -42,7 +42,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 public class ActivityByUserPlugin implements IStatisticPlugin {
 
     @Getter
-    private String title = "plugin_statistics_sudan_activity_by_user";
+    private String title = "intranda_statistics_sudan_memory_activity_by_user";
     @Getter
     private PluginType type = PluginType.Statistics;
 
