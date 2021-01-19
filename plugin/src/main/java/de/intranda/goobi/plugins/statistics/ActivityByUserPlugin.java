@@ -194,46 +194,42 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         AND s.BearbeitungsEnde BETWEEN '2019-01-01' AND '2020-12-31';
 
 
-    SELECT
-        plugin_statistics_sudan_timeRange,
-        SUM(plugin_statistics_sudan_titleCount) AS plugin_statistics_sudan_titleCount,
-        SUM(plugin_statistics_sudan_titlearabicCount) AS plugin_statistics_sudan_titlearabicCount,
-        SUM(plugin_statistics_sudan_descriptionCount) AS plugin_statistics_sudan_descriptionCount,
-        SUM(plugin_statistics_sudan_descriptionarabicCount) AS plugin_statistics_sudan_descriptionarabicCount,
-        COUNT(plugin_statistics_sudan_workflowTitle) AS plugin_statistics_sudan_workflowTitleCount,
-        plugin_statistics_sudan_workflowTitle,
-        plugin_statistics_sudan_userName
+SELECT
+    plugin_statistics_sudan_timeRange,
+    SUM(plugin_statistics_sudan_titleCount) AS plugin_statistics_sudan_titleCount,
+    SUM(plugin_statistics_sudan_titlearabicCount) AS plugin_statistics_sudan_titlearabicCount,
+    SUM(plugin_statistics_sudan_descriptionCount) AS plugin_statistics_sudan_descriptionCount,
+    SUM(plugin_statistics_sudan_descriptionarabicCount) AS plugin_statistics_sudan_descriptionarabicCount,
+    COUNT(plugin_statistics_sudan_workflowTitle) AS plugin_statistics_sudan_workflowTitleCount,
+    plugin_statistics_sudan_workflowTitle,
+    plugin_statistics_sudan_userName
+FROM
+    (SELECT
+        DATE_FORMAT(s.BearbeitungsEnde, '%Y-%m-%d') AS plugin_statistics_sudan_timeRange,
+            WORDCOUNT(m1.value) AS plugin_statistics_sudan_titleCount,
+            WORDCOUNT(m2.value) AS plugin_statistics_sudan_titlearabicCount,
+            WORDCOUNT(m3.value) AS plugin_statistics_sudan_descriptionCount,
+            WORDCOUNT(m4.value) AS plugin_statistics_sudan_descriptionarabicCount,
+            s.Titel AS plugin_statistics_sudan_workflowTitle,
+            CONCAT(u.Nachname, ', ', u.Vorname) AS plugin_statistics_sudan_userName
     FROM
-        (SELECT
-            DATE_FORMAT(s.BearbeitungsEnde, '%Y') AS plugin_statistics_sudan_timeRange,
-                WORDCOUNT(m1.value) AS plugin_statistics_sudan_titleCount,
-                WORDCOUNT(m2.value) AS plugin_statistics_sudan_titlearabicCount,
-                WORDCOUNT(m3.value) AS plugin_statistics_sudan_descriptionCount,
-                WORDCOUNT(m4.value) AS plugin_statistics_sudan_descriptionarabicCount,
-                s.Titel AS plugin_statistics_sudan_workflowTitle,
-                CONCAT(u.Nachname, ', ', u.Vorname) AS plugin_statistics_sudan_userName
-    FROM
-        metadata m1
-            JOIN
-        metadata m2 ON m1.processid = m2.processid
-            JOIN
-        metadata m3 ON m1.processid = m3.processid
-            JOIN
-        metadata m4 ON m1.processid = m4.processid
-            JOIN
-        schritte s ON m1.processid = s.ProzesseID
-            LEFT JOIN
-        benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID
+        schritte s
+    LEFT JOIN metadata m1 ON m1.processid = s.ProzesseID
+        AND m1.name = 'TitleDocMain'
+    LEFT JOIN metadata m2 ON s.ProzesseID = m2.processid
+        AND m2.name = 'TitleDocMainArabic'
+    LEFT JOIN metadata m3 ON s.ProzesseID = m3.processid
+        AND m3.name = 'ContentDescription'
+    LEFT JOIN metadata m4 ON s.ProzesseID = m4.processid
+        AND m4.name = 'ContentDescriptionArabic'
+    LEFT JOIN benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID
     WHERE
-        m1.name = 'TitleDocMain'
-            AND m2.name = 'TitleDocMainArabic'
-            AND m3.name = 'ContentDescription'
-            AND m4.name = 'ContentDescriptionArabic'
-            AND s.typMetadaten = TRUE
+        s.typMetadaten = TRUE
             AND s.Bearbeitungsstatus = 3
-            AND s.titel like '%ranslat%'
-            AND s.BearbeitungsEnde BETWEEN '2019-01-01' AND '2020-12-31' ) a
-  GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName , plugin_statistics_sudan_workflowTitle;
+            AND s.titel IN ('Translation of Arabic content to English' , 'Translation of English content to Arabic', 'Editing English metadata', 'Proof Reading Arabic metadata', 'Arabic metadata quality check', 'Transcribing English Captions')
+            AND s.BearbeitungsBenutzerID = 28
+            AND s.BearbeitungsEnde BETWEEN '2020-12-01' AND '2020-12-31') a
+GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName , plugin_statistics_sudan_workflowTitle;
 
 
     drop function wordcount;
@@ -277,6 +273,8 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         resultListDetails = null;
         StringBuilder overview = new StringBuilder();
 
+
+
         overview.append("SELECT  ");
         overview.append("plugin_statistics_sudan_timeRange, ");
         overview.append("SUM(plugin_statistics_sudan_titleCount) AS plugin_statistics_sudan_titleCount, ");
@@ -298,25 +296,21 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         overview.append("WORDCOUNT(m4.value) AS plugin_statistics_sudan_descriptionarabicCount, ");
         overview.append("s.Titel AS plugin_statistics_sudan_workflowTitle, ");
         overview.append("CONCAT(u.Nachname, ', ', u.Vorname) AS plugin_statistics_sudan_userName ");
+
         overview.append("FROM ");
-        overview.append("metadata m1 ");
-        overview.append("    JOIN ");
-        overview.append(" metadata m2 ON m1.processid = m2.processid ");
-        overview.append("    JOIN ");
-        overview.append("metadata m3 ON m1.processid = m3.processid ");
-        overview.append("    JOIN ");
-        overview.append("metadata m4 ON m1.processid = m4.processid ");
-        overview.append("    JOIN ");
-        overview.append("schritte s ON m1.processid = s.ProzesseID ");
-        overview.append("    LEFT JOIN ");
-        overview.append("benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
-        overview.append("WHERE ");
-        overview.append("m1.name = 'TitleDocMain' ");
-        overview.append("    AND m2.name = 'TitleDocMainArabic' ");
-        overview.append("    AND m3.name = 'ContentDescription' ");
-        overview.append("    AND m4.name = 'ContentDescriptionArabic' ");
-        overview.append("    AND s.typMetadaten = TRUE ");
-        overview.append("    AND s.Bearbeitungsstatus = 3 ");
+        overview.append("schritte s ");
+        overview.append("    LEFT JOIN metadata m1 ON m1.processid = s.ProzesseID ");
+        overview.append("        AND m1.name = 'TitleDocMain' ");
+        overview.append("    LEFT JOIN metadata m2 ON s.ProzesseID = m2.processid ");
+        overview.append("        AND m2.name = 'TitleDocMainArabic' ");
+        overview.append("    LEFT JOIN metadata m3 ON s.ProzesseID = m3.processid ");
+        overview.append("        AND m3.name = 'ContentDescription' ");
+        overview.append("    LEFT JOIN metadata m4 ON s.ProzesseID = m4.processid ");
+        overview.append("        AND m4.name = 'ContentDescriptionArabic' ");
+        overview.append("    LEFT JOIN benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
+        overview.append("    WHERE ");
+        overview.append("        s.typMetadaten = TRUE ");
+        overview.append("            AND s.Bearbeitungsstatus = 3 ");
         overview.append("    AND s.titel in (");
         overview.append("'Translation of Arabic content to English', ");
         overview.append("'Translation of English content to Arabic', ");
@@ -381,25 +375,19 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         details.append("p.Titel AS plugin_statistics_sudan_processTitle, ");
         details.append("CONCAT(u.Nachname, ', ', u.Vorname) AS plugin_statistics_sudan_userName ");
         details.append("FROM ");
-        details.append("metadata m1 ");
-        details.append("    JOIN ");
-        details.append("metadata m2 ON m1.processid = m2.processid ");
-        details.append("    JOIN ");
-        details.append("metadata m3 ON m1.processid = m3.processid ");
-        details.append("    JOIN ");
-        details.append("metadata m4 ON m1.processid = m4.processid ");
-        details.append("    JOIN ");
-        details.append("schritte s ON m1.processid = s.ProzesseID ");
-        details.append("    LEFT JOIN ");
-        details.append("prozesse p ON s.ProzesseID = p.ProzesseID ");
-        details.append("    LEFT JOIN ");
-        details.append("benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
+        details.append("schritte s ");
+        details.append("    LEFT JOIN metadata m1 ON m1.processid = s.ProzesseID ");
+        details.append("        AND m1.name = 'TitleDocMain' ");
+        details.append("    LEFT JOIN metadata m2 ON s.ProzesseID = m2.processid ");
+        details.append("        AND m2.name = 'TitleDocMainArabic' ");
+        details.append("    LEFT JOIN metadata m3 ON s.ProzesseID = m3.processid ");
+        details.append("        AND m3.name = 'ContentDescription' ");
+        details.append("    LEFT JOIN metadata m4 ON s.ProzesseID = m4.processid ");
+        details.append("        AND m4.name = 'ContentDescriptionArabic' ");
+        details.append("    LEFT JOIN prozesse p ON s.ProzesseID = p.ProzesseID ");
+        details.append("    LEFT JOIN benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
         details.append("WHERE ");
-        details.append("m1.name = 'TitleDocMain' ");
-        details.append("    AND m2.name = 'TitleDocMainArabic' ");
-        details.append("    AND m3.name = 'ContentDescription' ");
-        details.append("   AND m4.name = 'ContentDescriptionArabic' ");
-        details.append("    AND s.typMetadaten = TRUE ");
+        details.append(" s.typMetadaten = TRUE ");
         details.append("    AND s.titel in (");
         details.append("'Translation of Arabic content to English', ");
         details.append("'Translation of English content to Arabic', ");
