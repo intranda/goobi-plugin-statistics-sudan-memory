@@ -130,6 +130,7 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         userNameQuery.append("WHERE ");
         userNameQuery.append("s.typMetadaten = TRUE ");
         userNameQuery.append("AND s.Bearbeitungsstatus = 3 ");
+        userNameQuery.append("AND u.IstAktiv = true AND isVisible is NULL ");
         userNameQuery.append("AND s.titel IN ('Translation of Arabic content to English' , 'Translation of English content to Arabic', ");
         userNameQuery.append("'Editing English metadata', ");
         userNameQuery.append("'Proof Reading Arabic metadata', ");
