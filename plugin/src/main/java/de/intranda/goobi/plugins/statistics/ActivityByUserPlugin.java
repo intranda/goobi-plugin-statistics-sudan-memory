@@ -135,7 +135,7 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         userNameQuery.append("'Editing English metadata', ");
         userNameQuery.append("'Proof Reading Arabic metadata', ");
         userNameQuery.append("'Arabic metadata quality check', ");
-        userNameQuery.append("'Transcribing English Captions') ");
+        userNameQuery.append("'Transcribing English Captions','PUB_Final metadata QA English', 'PUB_Final metadata QA Arabic','PUB_Topic Tagging') ");
         userNameQuery.append("ORDER BY name; ");
 
         Connection connection = null;
@@ -318,7 +318,7 @@ GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName , 
         overview.append("'Editing English metadata', ");
         overview.append("'Proof Reading Arabic metadata', ");
         overview.append("'Arabic metadata quality check', ");
-        overview.append("'Transcribing English Captions' ");
+        overview.append("'Transcribing English Captions', 'PUB_Final metadata QA English', 'PUB_Final metadata QA Arabic', 'PUB_Topic Tagging' ");
         overview.append(") ");
 
         if (StringUtils.isNotBlank(userName)) {
@@ -395,7 +395,7 @@ GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName , 
         details.append("'Editing English metadata', ");
         details.append("'Proof Reading Arabic metadata', ");
         details.append("'Arabic metadata quality check', ");
-        details.append("'Transcribing English Captions' ");
+        details.append("'Transcribing English Captions', 'PUB_Final metadata QA English', 'PUB_Final metadata QA Arabic', 'PUB_Topic Tagging' ");
         details.append(") ");
         details.append("    AND s.Bearbeitungsstatus = 3 ");
 
