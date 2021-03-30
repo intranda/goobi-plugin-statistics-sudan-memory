@@ -83,6 +83,9 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
     @Setter
     private String userName;
 
+    private static final String usergroups =
+            "'Editing Arabic metadata', 'Editing English metadata', 'Metadata QA', 'Proof Reading Arabic metadata', 'PUB_Final metadata QA Arabic', 'PUB_Final metadata QA English', 'PUB_Layout Wizzard', 'PUB_Topic Tagging', 'Translation of Arabic content to English', 'Translation of English content to Arabic'";
+
     @Override
     public String getGui() {
         return "/uii/plugin_statistics_sudan_activity_by_user.xhtml";
@@ -131,11 +134,9 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         userNameQuery.append("s.typMetadaten = TRUE ");
         userNameQuery.append("AND s.Bearbeitungsstatus = 3 ");
         userNameQuery.append("AND u.IstAktiv = true AND isVisible is NULL ");
-        userNameQuery.append("AND s.titel IN ('Translation of Arabic content to English' , 'Translation of English content to Arabic', ");
-        userNameQuery.append("'Editing English metadata', ");
-        userNameQuery.append("'Proof Reading Arabic metadata', ");
-        userNameQuery.append("'Arabic metadata quality check', ");
-        userNameQuery.append("'Transcribing English Captions','PUB_Final metadata QA English', 'PUB_Final metadata QA Arabic','PUB_Topic Tagging') ");
+        userNameQuery.append("AND s.titel IN (");
+        userNameQuery.append(usergroups);
+        userNameQuery.append(") ");
         userNameQuery.append("ORDER BY name; ");
 
         Connection connection = null;
@@ -195,7 +196,7 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         AND s.BearbeitungsEnde BETWEEN '2019-01-01' AND '2020-12-31';
 
 
-SELECT
+    SELECT
     plugin_statistics_sudan_timeRange,
     SUM(plugin_statistics_sudan_titleCount) AS plugin_statistics_sudan_titleCount,
     SUM(plugin_statistics_sudan_titlearabicCount) AS plugin_statistics_sudan_titlearabicCount,
@@ -204,7 +205,7 @@ SELECT
     COUNT(plugin_statistics_sudan_workflowTitle) AS plugin_statistics_sudan_workflowTitleCount,
     plugin_statistics_sudan_workflowTitle,
     plugin_statistics_sudan_userName
-FROM
+    FROM
     (SELECT
         DATE_FORMAT(s.BearbeitungsEnde, '%Y-%m-%d') AS plugin_statistics_sudan_timeRange,
             WORDCOUNT(m1.value) AS plugin_statistics_sudan_titleCount,
@@ -230,7 +231,7 @@ FROM
             AND s.titel IN ('Translation of Arabic content to English' , 'Translation of English content to Arabic', 'Editing English metadata', 'Proof Reading Arabic metadata', 'Arabic metadata quality check', 'Transcribing English Captions')
             AND s.BearbeitungsBenutzerID = 28
             AND s.BearbeitungsEnde BETWEEN '2020-12-01' AND '2020-12-31') a
-GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName , plugin_statistics_sudan_workflowTitle;
+    GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName , plugin_statistics_sudan_workflowTitle;
 
 
     drop function wordcount;
@@ -274,8 +275,6 @@ GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName , 
         resultListDetails = null;
         StringBuilder overview = new StringBuilder();
 
-
-
         overview.append("SELECT  ");
         overview.append("plugin_statistics_sudan_timeRange, ");
         overview.append("SUM(plugin_statistics_sudan_titleCount) AS plugin_statistics_sudan_titleCount, ");
@@ -313,12 +312,7 @@ GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName , 
         overview.append("        s.typMetadaten = TRUE ");
         overview.append("            AND s.Bearbeitungsstatus = 3 ");
         overview.append("    AND s.titel in (");
-        overview.append("'Translation of Arabic content to English', ");
-        overview.append("'Translation of English content to Arabic', ");
-        overview.append("'Editing English metadata', ");
-        overview.append("'Proof Reading Arabic metadata', ");
-        overview.append("'Arabic metadata quality check', ");
-        overview.append("'Transcribing English Captions', 'PUB_Final metadata QA English', 'PUB_Final metadata QA Arabic', 'PUB_Topic Tagging' ");
+        overview.append(usergroups);
         overview.append(") ");
 
         if (StringUtils.isNotBlank(userName)) {
@@ -343,8 +337,7 @@ GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName , 
             overview.append("' ");
         }
 
-
-        overview.append(") a " );
+        overview.append(") a ");
 
         overview.append("GROUP BY plugin_statistics_sudan_timeRange, plugin_statistics_sudan_userName, plugin_statistics_sudan_workflowTitle; ");
 
@@ -390,12 +383,7 @@ GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName , 
         details.append("WHERE ");
         details.append(" s.typMetadaten = TRUE ");
         details.append("    AND s.titel in (");
-        details.append("'Translation of Arabic content to English', ");
-        details.append("'Translation of English content to Arabic', ");
-        details.append("'Editing English metadata', ");
-        details.append("'Proof Reading Arabic metadata', ");
-        details.append("'Arabic metadata quality check', ");
-        details.append("'Transcribing English Captions', 'PUB_Final metadata QA English', 'PUB_Final metadata QA Arabic', 'PUB_Topic Tagging' ");
+        details.append(usergroups);
         details.append(") ");
         details.append("    AND s.Bearbeitungsstatus = 3 ");
 
