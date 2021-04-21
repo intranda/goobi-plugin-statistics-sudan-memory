@@ -131,8 +131,7 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         userNameQuery.append("INNER JOIN ");
         userNameQuery.append("benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
         userNameQuery.append("WHERE ");
-        userNameQuery.append("s.typMetadaten = TRUE ");
-        userNameQuery.append("AND s.Bearbeitungsstatus = 3 ");
+        userNameQuery.append("s.Bearbeitungsstatus = 3 ");
         userNameQuery.append("AND u.IstAktiv = true AND isVisible is NULL ");
         userNameQuery.append("AND s.titel IN (");
         userNameQuery.append(usergroups);
@@ -309,8 +308,7 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         overview.append("        AND m4.name = 'ContentDescriptionArabic' ");
         overview.append("    LEFT JOIN benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
         overview.append("    WHERE ");
-        overview.append("        s.typMetadaten = TRUE ");
-        overview.append("            AND s.Bearbeitungsstatus = 3 ");
+        overview.append("        s.Bearbeitungsstatus = 3 ");
         overview.append("    AND s.titel in (");
         overview.append(usergroups);
         overview.append(") ");
@@ -381,8 +379,7 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         details.append("    LEFT JOIN prozesse p ON s.ProzesseID = p.ProzesseID ");
         details.append("    LEFT JOIN benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
         details.append("WHERE ");
-        details.append(" s.typMetadaten = TRUE ");
-        details.append("    AND s.titel in (");
+        details.append("  s.titel in (");
         details.append(usergroups);
         details.append(") ");
         details.append("    AND s.Bearbeitungsstatus = 3 ");
