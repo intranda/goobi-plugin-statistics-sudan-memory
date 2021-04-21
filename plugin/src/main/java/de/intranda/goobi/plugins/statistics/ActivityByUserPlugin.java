@@ -298,14 +298,10 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
 
         overview.append("FROM ");
         overview.append("schritte s ");
-        overview.append("    LEFT JOIN metadata m1 ON m1.processid = s.ProzesseID ");
-        overview.append("        AND m1.name = 'TitleDocMain' ");
-        overview.append("    LEFT JOIN metadata m2 ON s.ProzesseID = m2.processid ");
-        overview.append("        AND m2.name = 'TitleDocMainArabic' ");
-        overview.append("    LEFT JOIN metadata m3 ON s.ProzesseID = m3.processid ");
-        overview.append("        AND m3.name = 'ContentDescription' ");
-        overview.append("    LEFT JOIN metadata m4 ON s.ProzesseID = m4.processid ");
-        overview.append("        AND m4.name = 'ContentDescriptionArabic' ");
+        overview.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'TitleDocMain' group by processid ) as m1 ON m1.processid = s.ProzesseID ");
+        overview.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'TitleDocMainArabic' group by processid ) as m2 ON m2.processid = s.ProzesseID ");
+        overview.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'ContentDescription' group by processid ) as m3 ON m3.processid = s.ProzesseID ");
+        overview.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'ContentDescriptionArabic' group by processid ) as m4 ON m4.processid = s.ProzesseID ");
         overview.append("    LEFT JOIN benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
         overview.append("    WHERE ");
         overview.append("        s.Bearbeitungsstatus = 3 ");
@@ -368,14 +364,12 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         details.append("CONCAT(u.Nachname, ', ', u.Vorname) AS plugin_statistics_sudan_userName ");
         details.append("FROM ");
         details.append("schritte s ");
-        details.append("    LEFT JOIN metadata m1 ON m1.processid = s.ProzesseID ");
-        details.append("        AND m1.name = 'TitleDocMain' ");
-        details.append("    LEFT JOIN metadata m2 ON s.ProzesseID = m2.processid ");
-        details.append("        AND m2.name = 'TitleDocMainArabic' ");
-        details.append("    LEFT JOIN metadata m3 ON s.ProzesseID = m3.processid ");
-        details.append("        AND m3.name = 'ContentDescription' ");
-        details.append("    LEFT JOIN metadata m4 ON s.ProzesseID = m4.processid ");
-        details.append("        AND m4.name = 'ContentDescriptionArabic' ");
+
+        details.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'TitleDocMain' group by processid ) as m1 ON m1.processid = s.ProzesseID ");
+        details.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'TitleDocMainArabic' group by processid ) as m2 ON m2.processid = s.ProzesseID ");
+        details.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'ContentDescription' group by processid ) as m3 ON m3.processid = s.ProzesseID ");
+        details.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'ContentDescriptionArabic' group by processid ) as m4 ON m4.processid = s.ProzesseID ");
+
         details.append("    LEFT JOIN prozesse p ON s.ProzesseID = p.ProzesseID ");
         details.append("    LEFT JOIN benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
         details.append("WHERE ");
