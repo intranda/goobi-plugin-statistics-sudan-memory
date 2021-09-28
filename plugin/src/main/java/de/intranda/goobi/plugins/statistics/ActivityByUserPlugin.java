@@ -84,7 +84,7 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
     private String userName;
 
     private static final String usergroups =
-            "'Editing Arabic metadata', 'Editing English metadata', 'Metadata QA', 'Proof Reading Arabic metadata', 'PUB_Final metadata QA Arabic', 'PUB_Final metadata QA English', 'PUB_Layout Wizzard', 'PUB_Topic Tagging', 'Translation of Arabic content to English', 'Translation of English content to Arabic'";
+            "'Editing Arabic metadata', 'Editing English metadata', 'Metadata QA', 'Proof Reading Arabic metadata', 'PUB_Final metadata QA Arabic', 'PUB_Final metadata QA English', 'PUB_Layout Wizzard', 'PUB_Topic Tagging', 'Translation of Arabic content to English', 'Translation of English content to Arabic', 'Arabic metadata quality check'";
 
     @Override
     public String getGui() {
