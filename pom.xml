@@ -7,7 +7,7 @@
     <relativePath />
   </parent>
   <groupId>io.goobi.workflow.plugin</groupId>
-  <artifactId>plugin-statistics-sudan_memory</artifactId>
+  <artifactId>plugin-statistics-sudan-memory</artifactId>
   <packaging>pom</packaging>
   <modules>
     <module>module-base</module>
