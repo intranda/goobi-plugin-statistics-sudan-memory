@@ -1,7 +1,6 @@
 ---
 title: Sudan Memory Translations
 identifier: intranda_statistics_sudan_memory_activity_by_user
-title: identifier: intranda_statistics_ZZZ
 published: true
 description: This statistics plugin determines the activity of edits to translations within specific metadata fields.
 ---
