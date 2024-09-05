@@ -15,8 +15,8 @@ Detail                      | Description
 **Plugin identifier**       | intranda_statistics_sudan_memory_activity_by_user
 **Plugin type**             | statistics
 **Licence**                 | GPL 2.0 or newer
-**Documentation (German)**  | https://docs.goobi.io/workflow-plugins/v/eng/statistics/goobi-plugin-statistics-sudan-memory
-**Documentation (English)** | https://docs.goobi.io/workflow-plugins/v/ger/statistics/goobi-plugin-statistics-sudan-memory
+**Documentation (German)**  | https://docs.goobi.io/workflow-plugins/v/ger/statistics/goobi-plugin-statistics-sudan-memory
+**Documentation (English)** | https://docs.goobi.io/workflow-plugins/v/eng/statistics/goobi-plugin-statistics-sudan-memory
 
 ## Goobi details
 
