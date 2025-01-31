@@ -12,10 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +27,9 @@ import de.sub.goobi.helper.FacesContextHelper;
 import de.sub.goobi.helper.Helper;
 import de.sub.goobi.persistence.managers.ControllingManager;
 import de.sub.goobi.persistence.managers.MySQLHelper;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.model.SelectItem;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -41,6 +40,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 @PluginImplementation
 public class ActivityByUserPlugin implements IStatisticPlugin {
 
+    private static final long serialVersionUID = 4835356841354433552L;
     @Getter
     private String title = "intranda_statistics_sudan_memory_activity_by_user";
     @Getter
@@ -132,7 +132,7 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         userNameQuery.append("benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
         userNameQuery.append("WHERE ");
         userNameQuery.append("s.Bearbeitungsstatus = 3 ");
-        userNameQuery.append("AND u.IstAktiv = true AND isVisible is NULL ");
+        userNameQuery.append("AND u.userstatus = 'active' ");
         userNameQuery.append("AND s.titel IN (");
         userNameQuery.append(usergroups);
         userNameQuery.append(") ");
@@ -156,7 +156,7 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
     }
 
     /*
-
+    
     SELECT
     m1.processid,
     m1.value AS plugin_statistics_sudan_title,
@@ -193,8 +193,8 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         AND s.titel like '%ranslat%'
         AND s.Bearbeitungsstatus = 3
         AND s.BearbeitungsEnde BETWEEN '2019-01-01' AND '2020-12-31';
-
-
+    
+    
     SELECT
     plugin_statistics_sudan_timeRange,
     SUM(plugin_statistics_sudan_titleCount) AS plugin_statistics_sudan_titleCount,
@@ -231,8 +231,8 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
             AND s.BearbeitungsBenutzerID = 28
             AND s.BearbeitungsEnde BETWEEN '2020-12-01' AND '2020-12-31') a
     GROUP BY plugin_statistics_sudan_timeRange , plugin_statistics_sudan_userName , plugin_statistics_sudan_workflowTitle;
-
-
+    
+    
     drop function wordcount;
     DELIMITER $$
     CREATE FUNCTION wordcount(str TEXT CHARSET utf8mb4)
@@ -256,7 +256,7 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
        END
      $$
      DELIMITER ;
-
+    
      */
 
     /**
@@ -298,10 +298,14 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
 
         overview.append("FROM ");
         overview.append("schritte s ");
-        overview.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'TitleDocMain' group by processid ) as m1 ON m1.processid = s.ProzesseID ");
-        overview.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'TitleDocMainArabic' group by processid ) as m2 ON m2.processid = s.ProzesseID ");
-        overview.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'ContentDescription' group by processid ) as m3 ON m3.processid = s.ProzesseID ");
-        overview.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'ContentDescriptionArabic' group by processid ) as m4 ON m4.processid = s.ProzesseID ");
+        overview.append(
+                "    LEFT JOIN (select processid, min(value) as value from metadata where name = 'TitleDocMain' group by processid ) as m1 ON m1.processid = s.ProzesseID ");
+        overview.append(
+                "    LEFT JOIN (select processid, min(value) as value from metadata where name = 'TitleDocMainArabic' group by processid ) as m2 ON m2.processid = s.ProzesseID ");
+        overview.append(
+                "    LEFT JOIN (select processid, min(value) as value from metadata where name = 'ContentDescription' group by processid ) as m3 ON m3.processid = s.ProzesseID ");
+        overview.append(
+                "    LEFT JOIN (select processid, min(value) as value from metadata where name = 'ContentDescriptionArabic' group by processid ) as m4 ON m4.processid = s.ProzesseID ");
         overview.append("    LEFT JOIN benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
         overview.append("    WHERE ");
         overview.append("        s.Bearbeitungsstatus = 3 ");
@@ -365,10 +369,14 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         details.append("FROM ");
         details.append("schritte s ");
 
-        details.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'TitleDocMain' group by processid ) as m1 ON m1.processid = s.ProzesseID ");
-        details.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'TitleDocMainArabic' group by processid ) as m2 ON m2.processid = s.ProzesseID ");
-        details.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'ContentDescription' group by processid ) as m3 ON m3.processid = s.ProzesseID ");
-        details.append("    LEFT JOIN (select processid, min(value) as value from metadata where name = 'ContentDescriptionArabic' group by processid ) as m4 ON m4.processid = s.ProzesseID ");
+        details.append(
+                "    LEFT JOIN (select processid, min(value) as value from metadata where name = 'TitleDocMain' group by processid ) as m1 ON m1.processid = s.ProzesseID ");
+        details.append(
+                "    LEFT JOIN (select processid, min(value) as value from metadata where name = 'TitleDocMainArabic' group by processid ) as m2 ON m2.processid = s.ProzesseID ");
+        details.append(
+                "    LEFT JOIN (select processid, min(value) as value from metadata where name = 'ContentDescription' group by processid ) as m3 ON m3.processid = s.ProzesseID ");
+        details.append(
+                "    LEFT JOIN (select processid, min(value) as value from metadata where name = 'ContentDescriptionArabic' group by processid ) as m4 ON m4.processid = s.ProzesseID ");
 
         details.append("    LEFT JOIN prozesse p ON s.ProzesseID = p.ProzesseID ");
         details.append("    LEFT JOIN benutzer u ON s.BearbeitungsBenutzerID = u.BenutzerID ");
@@ -512,7 +520,7 @@ public class ActivityByUserPlugin implements IStatisticPlugin {
         }
     }
 
-    private static ResultSetHandler<List<SelectItem>> resultSetHandler = new ResultSetHandler<List<SelectItem>>() {
+    private static ResultSetHandler<List<SelectItem>> resultSetHandler = new ResultSetHandler<>() {
         @Override
         public List<SelectItem> handle(ResultSet rs) throws SQLException {
             List<SelectItem> answer = new ArrayList<>();

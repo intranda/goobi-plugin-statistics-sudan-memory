@@ -3,7 +3,7 @@
 		<exec executable="mvn">
 			<arg value="package"/>
 		</exec>
-		<copy file="module-gui/target/plugin_intranda_statistics_sudan_memory-GUI.jar" todir="/opt/digiverso/goobi/plugins/GUI/"/>
-		<copy file="module-main/target/plugin_intranda_statistics_sudan_memory.jar" todir="/opt/digiverso/goobi/plugins/statistics/"/>
+        <copy file="module-base/target/plugin-statistics-sudan-memory-base.jar" todir="/opt/digiverso/goobi/plugins/statistics/"/>
+        <copy file="module-gui/target/plugin-statistics-sudan-memory-gui.jar" todir="/opt/digiverso/goobi/plugins/GUI/"/>
 	</target>
 </project>

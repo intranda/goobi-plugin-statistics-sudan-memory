@@ -5,7 +5,6 @@
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:x="http://myfaces.apache.org/tomahawk"
     xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:c="http://java.sun.com/jsp/jstl/core">
@@ -224,7 +223,7 @@
 
 
 
-                                        <x:dataTable
+                                        <h:dataTable
                                             id="results"
                                             styleClass="table table-hover table-nomargin dataTable table-bordered responsive"
                                             var="item"
@@ -282,7 +281,7 @@
                                                 <h:outputText value="#{item.plugin_statistics_sudan_userName}" />
                                             </h:column>
 
-                                        </x:dataTable>
+                                        </h:dataTable>
 
                                     </div>
 
@@ -328,7 +327,7 @@
 
 
 
-                                        <x:dataTable
+                                        <h:dataTable
                                             id="resultsDetails"
                                             styleClass="table table-hover table-nomargin dataTable table-bordered responsive"
                                             var="item"
@@ -402,7 +401,7 @@
                                                 </f:facet>
                                                 <h:outputText value="#{item.plugin_statistics_sudan_userName}" />
                                             </h:column>
-                                        </x:dataTable>
+                                        </h:dataTable>
 
                                     </div>
 
