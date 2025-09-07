@@ -3,6 +3,10 @@ title: Sudan Memory Translations
 identifier: intranda_statistics_sudan_memory_activity_by_user
 published: true
 description: This statistics plugin determines the activity of edits to translations within specific metadata fields.
+keywords:
+    - Goobi workflow
+    - Plugin
+    - Statistics Plugin
 ---
 ## Introduction
 This statistics plugin enables statistical recording of the activity of translators and editors who edit specific metadata fields within the METS file. In particular, the translation work in the metadata fields `Title (Arabic)`, `Title (English)`, `Description (English)` and `Description (Arabic)` is taken into account.
