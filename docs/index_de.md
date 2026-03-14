@@ -49,7 +49,7 @@ DROP FUNCTION IF EXISTS wordcount;
      DELIMITER ;
 ```
 
-Dieser Funktion kann ein UTF8-codierter Text übergeben werden. Der Text wird Zeichen für Zeichen überprüft. Wenn das aktuelle Zeichen ein alnumerisches Zeichen ist (Buchstaben, Zahlen, Punkt, Komma, Buchstaben mit Diakritika, Klammern), das vorherige Zeichen jedoch nicht (Nichts, Leerzeichen, Zeilenumbruch, Tabulator), beginnt an dieser Stelle ein neues Wort und der Wortzähler wird erhöht. Am Ende wird der Wortzähler zurückgegeben.
+Dieser Funktion kann ein UTF8-codierter Text übergeben werden. Der Text wird Zeichen für Zeichen überprüft. Wenn das aktuelle Zeichen ein alphanumerisches Zeichen ist (Buchstaben, Zahlen, Punkt, Komma, Buchstaben mit Diakritika, Klammern), das vorherige Zeichen jedoch nicht (Nichts, Leerzeichen, Zeilenumbruch, Tabulator), beginnt an dieser Stelle ein neues Wort und der Wortzähler wird erhöht. Am Ende wird der Wortzähler zurückgegeben.
 
 
 ## Überblick und Funktionsweise

@@ -49,7 +49,7 @@ DROP FUNCTION IF EXISTS wordcount;
      DELIMITER ;
 ```
 
-A UTF8-encoded text can be passed to this function. The text is checked character by character. If the current character is an alnumeric character (letters, numbers, full stop, comma, letters with diacritics, brackets) but the previous character is not (nothing, space, newline, tab), a new word starts at this point and the word counter is incremented. At the end, the word counter is returned.
+A UTF8-encoded text can be passed to this function. The text is checked character by character. If the current character is an alphanumeric character (letters, numbers, full stop, comma, letters with diacritics, brackets) but the previous character is not (nothing, space, newline, tab), a new word starts at this point and the word counter is incremented. At the end, the word counter is returned.
 
 
 ## Overview and functionality
