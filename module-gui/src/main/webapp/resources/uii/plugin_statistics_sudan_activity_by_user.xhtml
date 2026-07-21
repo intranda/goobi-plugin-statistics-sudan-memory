@@ -15,11 +15,7 @@
 
     <composite:implementation>
 
-        <h:panelGroup rendered="#{!LoginForm.hasRole('view_translation_activity')}">
-            <h:outputText
-                styleClass="alert alert-danger alert-dismissable margin-bottom-10 margin-top-10"
-                value="#{msgs.plugin_administration_missingPermission} view_translation_activity"></h:outputText>
-        </h:panelGroup>
+        <util:missing-rights rights="view_translation_activity" rendered="true" />
 
         <ui:fragment rendered="#{LoginForm.hasRole('view_translation_activity')}">
 
